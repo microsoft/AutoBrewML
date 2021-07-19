@@ -110,7 +110,7 @@ We normalize our dataset using the MinMax scaling component of the python class 
 from sklearn.preprocessing import MinMaxScaler
 MinMax scaler transforms features by scaling each feature to a given range on the training set, e.g., between zero and one. It shifts and rescales the values so that they end up ranging between 0 and 1.
 <br/>Here’s the formula for normalization:
-<br/>X^'=  (X- X_min)/X_max⁡〖- X_min 〗  
+<br/>X^'=  (X- X_min)/(X_max⁡- X_min) 
 <br/>Here, 
 <br/>Xmax and Xmin are the maximum and the minimum values of the feature respectively.
 <br/>	When the value of X is the minimum value in the column, the numerator will be 0, and hence X’ is 0
