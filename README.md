@@ -4,7 +4,7 @@ With automated machine learning, the time it takes to get production-ready ML mo
 The Auto Tune ML framework tries to solve this problem at scale as well as simplifies the overall process for the user. It leverages the Azure Automated ML coupled with components like Data Profiler, Data Sampler, Data Cleanser, Anomaly Detector which ensures quality data as a critical pre-step for building the ML model. This is powered with Telemetry, DevOps and Power BI integration, thus providing the users with a one-stop shop solution to productionize any ML model. The framework aims at ‘Democratizing’ AI all the while maintaining the vision of ‘Responsible’ AI.
 
 - [WiKi](https://microsoft.sharepoint.com/:w:/t/PSOMITeam/EXUmfkOryddGrNyPFhCnDdoB_f3ptP0MG1s5avBw-9AsaA?e=zc9BiE)
-- [Presentation Deck](https://microsoft.sharepoint.com/:p:/t/PSOMITeam/Ec5HKo045kVCilSggusRtskBU_nsisUidULcIZMUyLQYng?e=ge08J1)
+- [Presentation Deck](https://github.com/microsoft/AutoTuneML/blob/a59889e56dbde792df3cb11bb7447741111d5291/AUTO%20TUNE%20MODEL-%20Demo%20(1).pptx)
 - [Working Demo](https://msit.microsoftstream.com/video/0bdaa3ff-0400-86e8-efbc-f1ea74b71034)
 - [Installations and further reading](https://microsoft-my.sharepoint.com/:o:/p/srde/EhAFUkLVaKlOjG_JVak4-XIB9lW2GWKGIhgaNxLAEMtZog)
 
