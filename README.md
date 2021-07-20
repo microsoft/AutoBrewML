@@ -3,7 +3,7 @@ Traditional machine learning model development is resource-intensive, requiring 
 With automated machine learning, the time it takes to get production-ready ML models with great ease and efficiency highly accelerates. However, the Automated Machine Learning does not yet provide much in terms of data preparation and feature engineering. 
 The Auto Tune ML framework tries to solve this problem at scale as well as simplifies the overall process for the user. It leverages the Azure Automated ML coupled with components like Data Profiler, Data Sampler, Data Cleanser, Anomaly Detector which ensures quality data as a critical pre-step for building the ML model. This is powered with Telemetry, DevOps and Power BI integration, thus providing the users with a one-stop shop solution to productionize any ML model. The framework aims at ‘Democratizing’ AI all the while maintaining the vision of ‘Responsible’ AI.
 
-- [WiKi](https://github.com/microsoft/AutoTuneML/blob/510595082a36d6d015f00dbc59d39ae367866e73/AUTO%20TUNE%20MODEL-%20Demo.pptx)
+> - [WiKi](https://github.com/microsoft/AutoTuneML/blob/510595082a36d6d015f00dbc59d39ae367866e73/AUTO%20TUNE%20MODEL-%20Demo.pptx)
 
 # Getting Started
 ## Prerequisites 
@@ -188,37 +188,3 @@ We would maintain two notebooks and a pipeline can be set to trigger the Trigger
 <br/>The Trigger notebook calls all the functions explained above using the desired dataset and specifying intermediate information like Dataset filepath in Azure Datalake, Key identifier of the experiment run to locate it in telemetry, location filepath to push telemetry data, Azure workspace and subscription details, Service Principle and Tenant ID of the subscription where the Workspace lies to bypass the Azure authentication process each time the Experiment is submitted as this needs to be an automated run on trigger of the pipeline. 
 <br/>The Telemetry captured encompasses of the Key identifier of the experiment run, Accuracy scores for the experiment, Function call information, Results and time generated for each step. The telemetry along with actual v/s predicted data is written to the Azure Datalake and can be fetched into Power BI from the Datalake in a live connection. Each time the telemetry files are updated, they would reflect in the Power BI report with updated information and current run status as compared to previous runs. 
 <br/>
-
-# OLD
-# Project
-
-> This repo has been populated by an initial template to help get you started. Please make sure to update the content to build a great experience for community-building.
-
-As the maintainer of this project, please make a few updates:
-
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
-
-## Contributing
-
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
-
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-## Trademarks
-
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
