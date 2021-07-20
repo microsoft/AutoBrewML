@@ -149,7 +149,9 @@ Anomaly detection aims to detect abnormal patterns deviating from the rest of th
 
 <br/>**7. Clustering Based Local Outlier Factor**
 <br/>It classifies the data into small clusters and large clusters. The anomaly score is then calculated based on the size of the cluster the point belongs to, as well as the <br/>distance to the nearest large cluster.
-<br/>Using each of the above algorithms we would estimate the number of outliers and inliers and assign the dataset points a Boolean value to identify them as inliers and <br/>outliers separately. We would allow user intervention to take the final call on which outliers to remove from the dataset and retrain in the model henceforth. Anomalies <br/>are not always bad data, instead they can reveal data trends which play a key role in predictions sometimes. Hence it is important to analyze the anomalies thus pointed <br/>but not get rid of them blindly.
+<br/>Using each of the above algorithms we would estimate the number of outliers and inliers and assign the dataset points a Boolean value to identify them as inliers and <br/>outliers separately. We would allow user intervention to take the final call on which outliers to remove from the dataset and retrain in the model henceforth. 
+<br/>
+Anomalies are not always bad data, instead they can reveal data trends which play a key role in predictions sometimes. Hence it is important to analyze the anomalies thus  <br/>pointed but not get rid of them blindly.
 
 
 # Azure Auto ML Trigger 
