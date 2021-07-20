@@ -35,6 +35,7 @@ The Auto Tune ML framework tries to solve this problem at scale as well as simpl
     5. SmartNoise to maintain PII data secrecy
 8.	[Telemetry & DevOps Integration for Pipelining](#telemetry-and-devops-integration-for-pipelining)
 
+![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/Pipeline.png)
 
 # Exploratory Data Analysis
 Exploratory Data Analysis refers to the critical process of performing initial investigations on data to discover patterns, to spot anomalies, to test hypothesis and to check assumptions with the help of summary statistics and graphical representations. 
@@ -42,6 +43,8 @@ Exploratory Data Analysis refers to the critical process of performing initial i
 # Data Sampling
 By Data Sampling, we can select, manipulate and analyze a representative subset of data points to identify patterns and trends in the larger dataset being examined. The dataset thus obtained is a weighted sample of the actual dataset, thus enabling a clear picture of the bigger dataset with best performance, retaining the overall data density and distribution. The following method is used to obtain samples of data from the original input data using different techniques and the best sample thus obtained is suggested to the user. The function ‘Sampling’ encompasses all the features of this as explained below.
 <br/>
+
+![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/Sampling_Techniques_Explained.png)
 
 1.	**Get the ideal sample size from the original input dataset using Solven’s formula**
 <br/>n=N/((1+N^2 ) )
@@ -125,6 +128,8 @@ MinMax scaler transforms features by scaling each feature to a given range on th
 Anomaly detection aims to detect abnormal patterns deviating from the rest of the data, called anomalies or outliers. Handling Outliers and anomalies is critical to the machine learning process. Outliers can impact the results of our analysis and statistical modeling in a drastic way. Our tendency is to use straightforward methods like box plots, histograms and scatter-plots to detect outliers. But dedicated outlier detection algorithms are extremely valuable in fields which process large amounts of data and require a means to perform pattern recognition in larger datasets. The PyOD library can step in to bridge this gap, which is a comprehensive and scalable Python toolkit for detecting outlying objects in multivariate data. We will be using the following algorithms within PyOD to detect and analyze the Outliers and indicate their presence in datasets.
 <br/>
 
+![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/AnomalyDetection_Techniques_Explained.png)
+
 <br/>**1. Angle-Based Outlier Detection (ABOD)**
 <br/>It considers the relationship between each point and its neighbor(s). It does not consider the relationships among these neighbors. The variance of its weighted cosine scores to all neighbors could be viewed as the outlying score. ABOD performs well on multi-dimensional data
 
@@ -166,10 +171,15 @@ Using Azure Machine Learning, you can design and run your automated ML training 
 <br/>5. Use this best model thus obtained to predict data and calculate accuracy scores on actual v/s predicted components of data. Mean Absolute Percentage Error (MAPE) is generally used to determine the performance of a model, but problems can occur when calculating the MAPE value with small denominators (Actual value =0 in denominator). A singularity problem of the form 'one divided by can occur. As an alternative, each actual value (A_(t )  of the series in the original formula can be replaced by the average of all actual values A_avg of that series. This is equivalent to dividing the sum of absolute differences by the sum of actual values and is sometimes referred to as WAPE (Weighted Absolute Percentage Error).
 <br/>6. The best model obtained can also be deployed and used using a REST API. The actual v/s predicted data can be reported and analyzed in Power BI along with the telemetry timestamps. 
 
+![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/AutoMLTrigger_steps.png)
+
 # Responsible AI Guidelines
 AI systems can cause a variety of fairness-related harms, including harms involving people’s individual experiences with AI systems or the ways that AI systems represent the groups to which they belong. Prioritizing fairness in AI systems is a sociotechnical challenge.
 Responsible AI Guidelines suggest the best way to build fairness, interpretability, privacy, and security into these systems.
 <br/>
+
+![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/ResponsibleAI_Pipeline.png)
+![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/ResponsibleAI_Explained.png)
 
 # Telemetry and DevOps Integration for Pipelining
 We would maintain two notebooks and a pipeline can be set to trigger the Trigger notebook from Azure Data Factory–
