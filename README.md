@@ -164,12 +164,18 @@ Anomalies are not always bad data, instead they can reveal data trends which pla
 During training, Azure Machine Learning creates several pipelines in parallel that try different algorithms and parameters for you. The service iterates through ML algorithms paired with feature selections, where each iteration produces a model with a training score. The higher the score, the better the model is considered to "fit" your data. It will stop once it hits the exit criteria defined in the experiment. The function ‘AutoMLFunc’ encompasses all the features of this as explained below.
 <br/>
 Using Azure Machine Learning, you can design and run your automated ML training experiments with these steps:
-<br/>1. Identify the ML problem to be solved: classification or regression.
-<br/>2. Configure the automated machine learning parameters that determine how many iterations over different models, hyperparameter settings, advanced preprocessing/featurization, and what metrics to look at when determining the best model.
-<br/>3. Divide the input preprocessed data into train and test datasets.
-<br/>4. Submit the training run and extract the best model based on primary metrics. 
-<br/>5. Use this best model thus obtained to predict data and calculate accuracy scores on actual v/s predicted components of data. Mean Absolute Percentage Error (MAPE) is generally used to determine the performance of a model, but problems can occur when calculating the MAPE value with small denominators (Actual value =0 in denominator). A singularity problem of the form 'one divided by can occur. As an alternative, each actual value (A_(t )  of the series in the original formula can be replaced by the average of all actual values A_avg of that series. This is equivalent to dividing the sum of absolute differences by the sum of actual values and is sometimes referred to as WAPE (Weighted Absolute Percentage Error).
-<br/>6. The best model obtained can also be deployed and used using a REST API. The actual v/s predicted data can be reported and analyzed in Power BI along with the telemetry timestamps. 
+<br/>
+1. Identify the ML problem to be solved: classification or regression.
+<br/>
+2. Configure the automated machine learning parameters that determine how many iterations over different models, hyperparameter settings, advanced preprocessing/featurization, and what metrics to look at when determining the best model.
+<br/>
+3. Divide the input preprocessed data into train and test datasets.
+<br/>
+4. Submit the training run and extract the best model based on primary metrics. 
+<br/>
+5. Use this best model thus obtained to predict data and calculate accuracy scores on actual v/s predicted components of data. Mean Absolute Percentage Error (MAPE) is generally used to determine the performance of a model, but problems can occur when calculating the MAPE value with small denominators (Actual value =0 in denominator). A singularity problem of the form 'one divided by can occur. As an alternative, each actual value (A_(t )  of the series in the original formula can be replaced by the average of all actual values A_avg of that series. This is equivalent to dividing the sum of absolute differences by the sum of actual values and is sometimes referred to as WAPE (Weighted Absolute Percentage Error).
+<br/>
+6. The best model obtained can also be deployed and used using a REST API. The actual v/s predicted data can be reported and analyzed in Power BI along with the telemetry timestamps. 
 
 ![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/AutoMLTrigger_steps.png)
 
