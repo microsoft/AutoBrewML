@@ -404,8 +404,13 @@ service_principal_id= "<Enter your Service Principal ID>"
 
 df=AutoMLFuncSP(subscription_id,resource_group,workspace_name,service_principal_password,tenant_id,service_principal_id,dfclean,'Y house price of unit area','regression','RealEstate')
 
- 
- 
+# DBTITLE 1,***13.Feature Selection
+input_dataframe = pd.read_csv("/dbfs/FileStore/RealEstate.csv", header='infer')
+label_col='Survived'
+filepath="/dbfs/FileStore/RealEstate.csv"
+input_appname='RealEstate'
+task_type='FeatureSelection'
+FeatureSelection(input_dataframe,label_col,filepath,input_appname,task_type)
 
 # COMMAND ----------
 
