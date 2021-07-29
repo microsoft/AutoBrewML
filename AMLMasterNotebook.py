@@ -142,7 +142,7 @@ def AnomalyDetection(df,target_variable,variables_to_analyze,outliers_fraction,i
         #dbutils.fs.cp ("/FileStore/AnomalyDetection.csv", OutputfileName, True) 
         n_outliers="%s" % str(n_outliers)
         n_inliers="%s" % str(n_inliers)
-        rm_str3 = "Insert into AutoTuneML.amltelemetry values (" + appnamequotes + ","+ task + ",'OUTLIERS :" + n_outliers + "  INLIERS :" + n_inliers  + "  :- " + clf_name+ "'," + tsquotes + ")"
+        rm_str3 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'OUTLIERS :" + n_outliers + "  INLIERS :" + n_inliers  + "  :- " + clf_name+ "'," + tsquotes + ")"
         spark.sql(rm_str3)
         is_outlier =  dfy['outlier']==1
         Outlier_data = dfy[is_outlier]
@@ -271,7 +271,7 @@ def ClusterSampling(input_dataframe,filepath,task_type,input_appname,cluster_col
   tsquotes = "'%s'" % str(ts)
   task = "'%s'" % str(task_type)
   print("Cluster sampling with SMOTE starting")
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Cluster Sampling starting'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Cluster Sampling starting'," + tsquotes + ")"
   spark.sql(rm_str)
   
   # summarize distribution
@@ -379,25 +379,25 @@ def ClusterSampling(input_dataframe,filepath,task_type,input_appname,cluster_col
     Len_Actualdataset= "%s" % str(Len_Actualdataset)
     Len_Sampleddataset= "%s" % str(Len_Sampleddataset)
     Sampling_Error= "%s" %  str(Sampling_Error)  
-    rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
     spark.sql(rm_str1)
-    rm_str2 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
+    rm_str2 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
     spark.sql(rm_str2)
-    rm_str3 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
+    rm_str3 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
     spark.sql(rm_str3)
-    rm_str4 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Cluster Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
+    rm_str4 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Cluster Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
     spark.sql(rm_str4)
     
   else:
     print ("Cluster Sample rejected")
-    rm_str5 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Cluster Sample rejected'," + tsquotes + ")"
+    rm_str5 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Cluster Sample rejected'," + tsquotes + ")"
     spark.sql(rm_str5)
   #print(pvalues) 
   #P is the probability that there is no significant difference between sample and actual (Null hypothesis)
   print('Average p-value between sample and actual(the bigger the p-value the closer the two datasets are.)= ',pvalues_average)
   
   pvalues_average="%s" % str(pvalues_average)
-  rm_str6 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
+  rm_str6 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
   spark.sql(rm_str6)
     
   return(sample_size,pvalues_average,subsample)
@@ -418,7 +418,7 @@ def RandomSampling(input_dataframe, filepath,task_type,input_appname):
   tsquotes = "'%s'" % str(ts)
   task = "'%s'" % str(task_type)
   print("Random Sampling starting")
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Random Sampling starting'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Random Sampling starting'," + tsquotes + ")"
   spark.sql(rm_str)
   
   #Getting ideal sample size by Solven's Formula assuming Confidence Level=95% i.e n = N / (1 + Ne²)
@@ -473,25 +473,25 @@ def RandomSampling(input_dataframe, filepath,task_type,input_appname):
     Len_Actualdataset= "%s" % str(Len_Actualdataset)
     Len_Sampleddataset= "%s" % str(Len_Sampleddataset)
     Sampling_Error= "%s" %  str(Sampling_Error)  
-    rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
     spark.sql(rm_str1)
-    rm_str2 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
+    rm_str2 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
     spark.sql(rm_str2)
-    rm_str3 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
+    rm_str3 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
     spark.sql(rm_str3)
-    rm_str4 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Systematic Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
+    rm_str4 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Systematic Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
     spark.sql(rm_str4)
     
   else:
     print ("Random Sample rejected")
-    rm_str5 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Systematic Sample rejected'," + tsquotes + ")"
+    rm_str5 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Systematic Sample rejected'," + tsquotes + ")"
     spark.sql(rm_str5)
   #print(pvalues) 
   #P is the probability that there is no significant difference between sample and actual (Null hypothesis)
   print('Average p-value between sample and actual(the bigger the p-value the closer the two datasets are.)= ',pvalues_average)
   
   pvalues_average="%s" % str(pvalues_average)
-  rm_str6 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
+  rm_str6 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
   spark.sql(rm_str6)
     
   return(sample_size,pvalues_average,subsample)
@@ -512,7 +512,7 @@ def SystematicSampling(input_dataframe,filepath,task_type,input_appname):
   tsquotes = "'%s'" % str(ts)
   task = "'%s'" % str(task_type)
   print("Systematic Sampling starting")
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Systematic Sampling starting'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Systematic Sampling starting'," + tsquotes + ")"
   spark.sql(rm_str)
   
   #Getting ideal sample size by Solven's Formula assuming Confidence Level=95% i.e n = N / (1 + Ne²)
@@ -567,24 +567,24 @@ def SystematicSampling(input_dataframe,filepath,task_type,input_appname):
     Len_Actualdataset= "%s" % str(Len_Actualdataset)
     Len_Sampleddataset= "%s" % str(Len_Sampleddataset)
     Sampling_Error= "%s" %  str(Sampling_Error)  
-    rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
     spark.sql(rm_str1)
-    rm_str2 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
+    rm_str2 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
     spark.sql(rm_str2)
-    rm_str3 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
+    rm_str3 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
     spark.sql(rm_str3)
-    rm_str4 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Systematic Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
+    rm_str4 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Systematic Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
     spark.sql(rm_str4)
     
   else:
     print ("Systematic Sample rejected")
-    rm_str5 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Systematic Sample rejected'," + tsquotes + ")"
+    rm_str5 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Systematic Sample rejected'," + tsquotes + ")"
     spark.sql(rm_str5)
   #print(pvalues) 
   #P is the probability that there is no significant difference between sample and actual (Null hypothesis)
   print('Average p-value between sample and actual(the bigger the p-value the closer the two datasets are.)= ',pvalues_average)
   pvalues_average="%s" % str(pvalues_average)
-  rm_str6 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
+  rm_str6 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
   spark.sql(rm_str6)
     
   return(sample_size,pvalues_average,subsample)
@@ -609,7 +609,7 @@ def StratifiedSampling(input_dataframe,filepath,task_type,input_appname):
   tsquotes = "'%s'" % str(ts)
   task = "'%s'" % str(task_type)
   print("Stratified Sampling starting")
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Stratified Sampling starting'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Stratified Sampling starting'," + tsquotes + ")"
   spark.sql(rm_str)
   
   #Label encoder accepts only non nulls
@@ -739,25 +739,25 @@ def StratifiedSampling(input_dataframe,filepath,task_type,input_appname):
     Len_Actualdataset= "%s" % str(Len_Actualdataset)
     Len_Sampleddataset= "%s" % str(Len_Sampleddataset)
     Sampling_Error= "%s" %  str(Sampling_Error)  
-    rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
     spark.sql(rm_str1)
-    rm_str2 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
+    rm_str2 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
     spark.sql(rm_str2)
-    rm_str3 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
+    rm_str3 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
     spark.sql(rm_str3)
-    rm_str4 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Stratified Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
+    rm_str4 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Stratified Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
     spark.sql(rm_str4)
     
   else:
     print ("Stratified Sample rejected")
-    rm_str5 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Stratified Sample rejected'," + tsquotes + ")"
+    rm_str5 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Stratified Sample rejected'," + tsquotes + ")"
     spark.sql(rm_str5)
   #print(pvalues) 
   #P is the probability that there is no significant difference between sample and actual (Null hypothesis)
   print('Average p-value between sample and actual (the bigger the p-value the closer the two datasets are.)= ',pvalues_average)
   
   pvalues_average="%s" % str(pvalues_average)
-  rm_str6 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
+  rm_str6 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
   spark.sql(rm_str6)
     
   return(sample_size,pvalues_average,subsample)
@@ -826,7 +826,7 @@ def Sampling(input_dataframe,filepath,task_type,input_appname,cluster_col):
   print("\n","Best Suggested Sample is - ",Keymax)
   
   Keymax="%s" % Keymax
-  rm_str7 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Best Suggested Sample is - " + Keymax + "'," + tsquotes + ")"
+  rm_str7 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Best Suggested Sample is - " + Keymax + "'," + tsquotes + ")"
   spark.sql(rm_str7)
   
   return(subsample_final,subsample1,subsample2,subsample3,subsample4)
@@ -846,7 +846,7 @@ def display_DataDistribution(input_dataframe,label_col):
 
 # MAGIC %md
 # MAGIC ## Data Cleansing:
-# MAGIC Before triggering the Azure Auto ML, our proposed framework (Auto Tune Model) helps improve the data quality of our input dataset using the Data Cleansing component.
+# MAGIC Before triggering the Azure Auto ML, our proposed framework helps improve the data quality of our input dataset using the Data Cleansing component.
 # MAGIC Since data is considered the currency for any machine learning model, it is very critical for the success of Machine Learning applications. The algorithms that we may use can be powerful, but without the relevant or right data training, our system may fail to yield ideal results.
 # MAGIC Data cleansing refers to identifying and correcting errors in the dataset that may negatively impact a predictive model. It refers to all kinds of tasks and activities to detect and repair errors in the data. This improves the quality of the training data for analytics and enables accurate decision-making.
 # MAGIC The function ‘autodatacleaner’ encompasses all the underlying features of the data cleansing component that are outlined below.
@@ -918,9 +918,9 @@ def fixCategoricalColumns(input_dataframe,input_appname,task_type):
       for col in input_dataframe.columns:
         input_dataframe[col]=le.fit_transform(input_dataframe[col])
   print("Label Encoding on categorical columns.")
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Fixed structural errors for categorical columns'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Fixed structural errors for categorical columns'," + tsquotes + ")"
   spark.sql(rm_str)
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Applied Label Encoding for categorical columns'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Applied Label Encoding for categorical columns'," + tsquotes + ")"
   spark.sql(rm_str)
   
   print("MinMax scaling for Normalisation.")
@@ -935,7 +935,7 @@ def fixCategoricalColumns(input_dataframe,input_appname,task_type):
   from sklearn.preprocessing import MinMaxScaler
   mms = MinMaxScaler()
   input_dataframe[column_list] = pd.DataFrame(mms.fit_transform(input_dataframe[column_list]),columns = column_list_actual )
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Applied MinMax scaling for Normalisation'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Applied MinMax scaling for Normalisation'," + tsquotes + ")"
   spark.sql(rm_str)
   #print(scaler.transform([[2, 2]]))
   return input_dataframe                         
@@ -960,21 +960,21 @@ def impute(input_dataframe,input_appname,task_type):
     if(input_dataframe[column].dtype) not in ["object"]:
       NumCol.append(column)
       input_dataframe[column].fillna(input_dataframe[column].median(), inplace=True)
-      rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Imputation of Numerical Column done using Median= " + column + "'," + tsquotes + ")"
+      rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Imputation of Numerical Column done using Median= " + column + "'," + tsquotes + ")"
       spark.sql(rm_str)
     else:
       CatCol.append(column)
       most_frequent = input_dataframe[column].mode() 
       if len(most_frequent) > 0:
         input_dataframe[column].fillna(input_dataframe[column].mode()[0], inplace=True)
-        rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Imputation of Categorical Column done using Mode= " + column + "'," + tsquotes + ")"
+        rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Imputation of Categorical Column done using Mode= " + column + "'," + tsquotes + ")"
         spark.sql(rm_str)
       else:
         input_dataframe[column].fillna(method='bfill', inplace=True)
-        rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Imputation of Categorical Column done using bfill= " + column + "'," + tsquotes + ")"
+        rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Imputation of Categorical Column done using bfill= " + column + "'," + tsquotes + ")"
         spark.sql(rm_str)
         input_dataframe[column].fillna(method='ffill', inplace=True)
-        rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Imputation of Categorical Column done using ffill= " + column + "'," + tsquotes + ")"
+        rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Imputation of Categorical Column done using ffill= " + column + "'," + tsquotes + ")"
         spark.sql(rm_str)
   print("\n","Imputation of Columns:")
   print("Imputation of Numerical Column done using Median:")
@@ -1020,7 +1020,7 @@ def cleanMissingValues(input_dataframe,input_appname,task_type):
       if((round(((missingCount[col] / input_dataframe.shape[0]) * 100), 2))>50):
         print("Dropping this column as it contains missing values in more than half of the dataset...")
         input_dataframe_CleanCols=input_dataframe.drop(col,axis=1,inplace=True)
-        rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Null Column removed: " + col + "'," + tsquotes + ")"
+        rm_str = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Null Column removed: " + col + "'," + tsquotes + ")"
         spark.sql(rm_str)
         print("Total Columns in original dataset: %d \n" % input_dataframe.shape[1])
         print("Total Columns now with na's dropped: %d" % input_dataframe_CleanCols.shape[1])
@@ -1030,7 +1030,7 @@ def cleanMissingValues(input_dataframe,input_appname,task_type):
         print("As percent of missing values is less than half, imputing this column based on the data type.")
         input_dataframe_imputed=impute(input_dataframe,'Auto Tune Model','Data Cleansing',col)
         cleaned_inputdf=input_dataframe_imputed
-        rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Imputation completed for all Columns'," + tsquotes + ")"
+        rm_str = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Imputation completed for all Columns'," + tsquotes + ")"
         spark.sql(rm_str)
   return cleaned_inputdf
 
@@ -1232,7 +1232,7 @@ def PrinCompAnalysis(input_dataframe,input_appname,task_type):
   # build the dataframe
   df_see = pd.DataFrame(sorted(dic.items()))
   
-  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'PCA Done'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'PCA Done'," + tsquotes + ")"
   spark.sql(rm_str)
   
   df_see.columns =['Principal_Component','Most_Important_Feature_Along_PC']
@@ -1374,7 +1374,7 @@ def AutoMLFuncPCA(subscription_id,resource_group,workspace_name,input_dataframe,
   most_important_names = [initial_feature_names[most_important[i]] for i in range(n_pcs)]
   dic = {'PC{}'.format(i+1): most_important_names[i] for i in range(n_pcs)}
   df_see = pd.DataFrame(sorted(dic.items()))
-  rm_str = "Insert into amltelemetry values (" + appnamequotes + "," + task + ",'PCA Done,Transformed data to reduce Dimensionality'," + tsquotes + ")"
+  rm_str = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'PCA Done,Transformed data to reduce Dimensionality'," + tsquotes + ")"
   spark.sql(rm_str)
   df_see.columns =['Principal_Component','Most_Important_Feature_Along_PC']
   
@@ -1421,7 +1421,7 @@ def AutoMLFuncPCA(subscription_id,resource_group,workspace_name,input_dataframe,
     #print("Model Accuracy:")
     #print(1 - mean_abs_percent_error)
     Accuracy_score="'%s'" % str(1 - mean_abs_percent_error)
-    rm_str1 = "Insert into amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage (PCA) =' " + Accuracy_score + "," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage (PCA) =' " + Accuracy_score + "," + tsquotes + ")"
     spark.sql(rm_str1)
     #return(1 - mean_abs_percent_error)
     print("Follow this URL for your Experiment run: ")  
@@ -1457,7 +1457,7 @@ def AutoMLFuncPCA(subscription_id,resource_group,workspace_name,input_dataframe,
     #print ('Report : ')
     #print (classification_report(y_actual, y_predict)) 
     Accuracy_score="'%s'" % str(accuracy_score(y_actual, y_predict))
-    rm_str1 = "Insert into amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage (PCA) =' " + Accuracy_score + "," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage (PCA) =' " + Accuracy_score + "," + tsquotes + ")"
     spark.sql(rm_str1)
     #return(accuracy_score(y_actual, y_predict))
     print("Follow this URL for your Experiment run: ")  
@@ -1530,7 +1530,7 @@ def AutoMLFunc(subscription_id,resource_group,workspace_name,input_dataframe,lab
     #print("Model Accuracy:")
     #print(1 - mean_abs_percent_error)
     Accuracy_score="'%s'" % str(1 - mean_abs_percent_error)
-    rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
     spark.sql(rm_str1)
     #return(1 - mean_abs_percent_error)
     print("Follow this URL for your Experiment run: ")  
@@ -1572,7 +1572,7 @@ def AutoMLFunc(subscription_id,resource_group,workspace_name,input_dataframe,lab
     #print ('Report : ')
     #print (classification_report(y_actual, y_predict)) 
     Accuracy_score="'%s'" % str(accuracy_score(y_actual, y_predict))
-    rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
     spark.sql(rm_str1)
     #return(accuracy_score(y_actual, y_predict))
     print("Follow this URL for your Experiment run: ")  
@@ -1648,7 +1648,7 @@ def AutoMLFuncSP(subscription_id,resource_group,workspace_name,svc_pr_password,t
     #print("Model Accuracy:")
     #print(1 - mean_abs_percent_error)
     Accuracy_score="'%s'" % str(1 - mean_abs_percent_error)
-    rm_str1 = "Insert into amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
     spark.sql(rm_str1)
     #return(1 - mean_abs_percent_error)
 
@@ -1682,7 +1682,7 @@ def AutoMLFuncSP(subscription_id,resource_group,workspace_name,svc_pr_password,t
     #print ('Report : ')
     #print (classification_report(y_actual, y_predict)) 
     Accuracy_score="'%s'" % str(accuracy_score(y_actual, y_predict))
-    rm_str1 = "Insert into amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
     spark.sql(rm_str1)
     #return(accuracy_score(y_actual, y_predict))
   print("Follow this URL for your Experiment run: ")  
@@ -1693,9 +1693,9 @@ def AutoMLFuncSP(subscription_id,resource_group,workspace_name,svc_pr_password,t
 
 # DBTITLE 1,Telemetry Table Creation in gen2 dev lake
 #%sql
-#Create database AutoTuneML
+#Create database
 #%sql
-#CREATE TABLE  AutoTuneML.amltelemetry
+#CREATE TABLE  TelemetryTable
 #(MLKey String,
 #Step String,
 #Results String,
@@ -1703,4 +1703,4 @@ def AutoMLFuncSP(subscription_id,resource_group,workspace_name,svc_pr_password,t
 #)
 #
 #Using delta
-#    LOCATION 'abfss://adlsstore@<Your ADLS Name>.dfs.core.windows.net/dev/amltelemetry'
+#    LOCATION 'abfss://<Your ADLS Name>.dfs.core.windows.net/dev/TelemetryTable'
