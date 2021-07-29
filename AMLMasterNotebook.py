@@ -1120,6 +1120,71 @@ def Data_Profiling_Fin(input_dataframe):
 
 # COMMAND ----------
 
+# DBTITLE 1,Feature Selection
+def FeatureSelection(input_dataframe,label_col,filepath,input_appname,task_type):
+  input_dataframe = pd.read_csv(filepath, header='infer')
+  input_dataframe.drop(['Index'], axis=1, inplace=True)
+  
+  #Feature imp accept only numeric columns hence label encode
+  from sklearn.preprocessing import LabelEncoder
+  le = LabelEncoder()
+  for col in input_dataframe.columns:
+    if (input_dataframe[col].dtype) not in ["int32","int64","float","float64"]:
+      input_dataframe[col]=le.fit_transform(input_dataframe[col])
+  
+  #Doesn't accept nulls so impute
+  input_dataframe=impute(input_dataframe,input_appname,task_type)
+  
+  #X features,Y target or label
+  Y = input_dataframe.pop(label_col)
+  X = input_dataframe
+  
+  #Feature Imp based on Information gain & Entropy 
+  print("\n","*Feature Imp based on Information Gain & Entropy")
+  from sklearn.feature_selection import mutual_info_classif
+  importances = mutual_info_classif(X, Y)
+  feat_importances = pd.Series(importances, X.columns[0:len(X.columns)])
+  sorted_feat_importances = feat_importances.sort_values(ascending= False)
+  print("Information Gain indicates how much information a particular variable or feature gives us about the final outcome. Order of feture Importance. Ascending-Most important first.","\n",sorted_feat_importances)
+  
+  
+  #Fetures Selection based on Correlation matrix
+  print("\n","*Fetures Selection based on Correlation matrix")
+  Correlation_Thresh=0.9
+  corr_matrix = X.corr()
+  print(corr_matrix)
+  #Select upper triangle of correlation matrix
+  upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
+  print(upper)  
+  #Find index of feature columns with correlation greater than 0.9
+  to_drop = [column for column in upper.columns if any(upper[column] > Correlation_Thresh)]
+  print("Threshold o Correlation=",Correlation_Thresh)
+  print("Highly Correlated columns- drop one of them. Columns to drop=",to_drop) 
+  
+  #Fetures Selection based on Variance Threshold. 
+  print("\n","*Fetures Selection based on Variance Threshold")
+  from sklearn.feature_selection import VarianceThreshold
+  Variance_threshold=0 #Default zero variance
+  v_threshold = VarianceThreshold(threshold=Variance_threshold)
+  v_threshold.fit(X) 
+  v_threshold.get_support()
+  BoolAccepted = pd.Series(v_threshold.get_support(), X.columns[0:len(X.columns)])
+  print("Remove all features which variance doesn’t meet some threshold. We assume that features with a higher variance may contain more useful information, but note that we are not taking the relationship between feature variables or feature and target variables into account. True means that the variable does not have variance=",Variance_threshold)
+  print(BoolAccepted)
+  
+  
+  # Feature Importance with Extra Trees Classifier
+  print("\n","*Feature Importance with Extra Trees Classifier")
+  from sklearn.ensemble import ExtraTreesClassifier
+  model = ExtraTreesClassifier(n_estimators=10) #Default number of trees in forest=100, here 10 chosen
+  model.fit(X, Y)
+  feat_importances = pd.Series(model.feature_importances_, X.columns[0:len(X.columns)])
+  sorted_feat_importances = feat_importances.sort_values(ascending= False)
+  print("Bagged decision trees like Random Forest and Extra Trees can be used to estimate the importance of features. Larger score the more important the attribute.")
+  print("Feature Importance values:","\n",sorted_feat_importances)
+
+# COMMAND ----------
+
 # DBTITLE 1,Feature Selection- PCA
 def PrinCompAnalysis(input_dataframe,input_appname,task_type):
   from datetime import date
