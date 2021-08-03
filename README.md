@@ -25,7 +25,8 @@ The Auto Tune ML framework tries to solve this problem at scale as well as simpl
     4. Cluster Sampling (with SMOTE)
 3.	[Data Cleansing](#data-cleansing)
 4.	[Anomaly Detection](#anomaly-detection)
-5.	[Azure Auto ML Trigger](#azure-auto-ml-trigger)
+5.	[Feature Selection](#feature-selection)
+6.	[Azure Auto ML Trigger](#azure-auto-ml-trigger)
     (*Azure Component encapsulated with all cofigs and parameters)
 7.	[Responsible AI Guidelines](#responsible-ai-guidelines) 
     1. Error Analysis
@@ -158,6 +159,31 @@ Anomaly detection aims to detect abnormal patterns deviating from the rest of th
 <br/>
 Anomalies are not always bad data, instead they can reveal data trends which play a key role in predictions sometimes. Hence it is important to analyze the anomalies thus  pointed but not get rid of them blindly.
 
+# Feature Selection
+Feature selection is the process of reducing the number of input variables when developing a predictive model. It is desirable to reduce the number of input variables to both reduce the computational cost of modeling and, in some cases, to improve the performance of the model. We consider different techniques to select the most important features.
+
+<br/>**1. Fetures Selection based on Decision tree Regressor/Classifier**
+<br/>Decision tree algorithms like classification and regression trees (CART) offer importance scores based on the reduction in the criterion used to select split points, like Gini or entropy. We can use the CART algorithm for feature importance implemented in scikit-learn as the DecisionTreeRegressor and DecisionTreeClassifier classes. After being fit, the model provides a feature_importances_ property that can be accessed to retrieve the relative importance scores for each input feature.
+
+<br/>**2. Fetures Selection based on Correlation matrix**
+<br/>A correlation is a number between -1 and 1 that indicates the extent to which two variables are linearly related.
+<br/>The correlation coefficient has values between -1 to 1
+<br/>-A value closer to 0 implies weaker correlation (exact 0 implying no correlation).
+<br/>-A value closer to 1 implies stronger positive correlation.
+<br/>-A value closer to -1 implies stronger negative correlation.
+<br/>We get the Correlation matrix, drill down our search to one of the two triangles of matrix, check which features are highly correlated (beyond a threshold say .9) and drop one of the two features.
+
+<br/>**3. Fetures Selection based on Variance Threshold**
+<br/>Remove all features which variance doesn’t meet some threshold. We assume that features with a higher variance may contain more useful information, but note that we are not taking the relationship between feature variables or feature and target variables into account. 
+
+<br/>**4. Feature Importance**
+<br/>To improve the efficiency and effectiveness of a predictive model on the problem, we can apply Feature importance since it provides us with a basis for dimensionality reduction and feature selection. It refers to a class of techniques that assign a score to input features based on how useful they are at predicting a target variable. Feature importance scores provide insight into the dataset. The relative scores highlight which features may be the most relevant to the target, and the converse, which features are the least relevant. We are using ML Interpret and Exploration classes so that from a wide number of variables, we can pick those variables only that provide maximum variability along the prediction column of these classes. We can choose out of two flavors of feature importance implementations on need basis that is: Global (Based on whole dataset, aggregated value) and Local (Record to record basis). Local measures focus on the contribution of features for a specific prediction, whereas global measures take all predictions into account.
+<br/>To generate an explanation for AutoML models, we also use the MimicWrapper class. 
+<br/>We can initialize the MimicWrapper with these parameters:
+<br/>-The explainer setup object
+<br/>-Your workspace
+<br/>-A surrogate model to explain the fitted_model automated ML model
+<br/>-The automl_run object where the engineered explanations will be uploaded
 
 # Azure Auto ML Trigger 
 <br/>
