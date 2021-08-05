@@ -38,6 +38,26 @@
 # MAGIC %pip install azureml-explain-model
 # MAGIC %pip install imbalanced-learn
 # MAGIC %pip install pyod
+                                       
+                                
+         
+                                   
+                                         
+                                       
+                                                        
+                                           
+                                  
+                                            
+                                        
+                                              
+                                 
+                                    
+                                    
+                                     
+                                            
+                                 
+                                
+                                 
 
 # COMMAND ----------
 
@@ -55,7 +75,59 @@ print('- matplotlib = {}'.format(matplotlib.__version__))
 print('- pandas = {}'.format(pd.__version__))
 print('- sklearn = {}'.format(sklearn.__version__))
 
+                    
 
+                                              
+              
+                                     
+                                               
+                                             
+                                                     
+                        
+                           
+        
+                                        
+                                        
+                                      
+                            
+         
+                                                          
+                                            
+                                
+         
+                                
+         
+                                                         
+                                               
+                               
+         
+            
+         
+                                                         
+                                               
+                               
+         
+        
+                                                                                                                                                                                                      
+                                                                                         
+                                                                                                        
+        
+                                                         
+                                                                                        
+                                                                          
+                                                                                   
+                                                                   
+                                                                        
+                                                                                     
+        
+                
+                                                                                                                                                                                 
+                                                                                                                                                                      
+                                                                                                                                                                 
+                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                
+                                                                                      
+                                                                   
 
 # COMMAND ----------
 
@@ -87,7 +159,11 @@ from pyspark.sql.functions import base64
 from pyspark.sql.functions import unbase64
 warnings.filterwarnings("ignore")
 outliers_fraction = 0.05
+                                                                                                                                                                                                                
+                              
+                                  
 output_path = '/dbfs/FileStore/AnomalyDetection_HTML'
+                                        
 def AnomalyDetection(df,target_variable,variables_to_analyze,outliers_fraction,input_appname,task_type):
     import time
     from datetime import date
@@ -943,7 +1019,7 @@ def fixCategoricalColumns(input_dataframe,input_appname,task_type):
 # COMMAND ----------
 
 # DBTITLE 1,Data Cleanser -Imputation
-def impute(input_dataframe,input_appname,task_type):
+def impute(input_dataframe,input_appname,task_type,column):
   # Replace NaNs with the median or mode of the column depending on the column type
   #print("Standard deviation of dataframe before imputation is:\n",input_dataframe.std(axis = 0, skipna = True))
   import time
@@ -1037,16 +1113,17 @@ def cleanMissingValues(input_dataframe,input_appname,task_type):
 # COMMAND ----------
 
 # DBTITLE 1,Data Cleanser Master
-def autodatacleaner(inputdf,input_appname,task_type):
-  filepath = '/dbfs/FileStore/RealEstate_tobeCleansed.csv'
+def autodatacleaner(inputdf,filepath,input_appname,task_type):
+  inputdf = pd.read_csv(filepath, header='infer')
   inputdf.to_csv(filepath, index=False)
   task_type1=task_type
   input_appname1=input_appname
   task_type2=task_type
   input_appname2=input_appname
   
-  inputdf_1=impute(inputdf,input_appname1,task_type1)
-  inputdf_2=cleanMissingValues(inputdf_1,input_appname2,task_type2)
+  #inputdf_1=impute(inputdf,input_appname1,task_type1)
+  #inputdf_2=cleanMissingValues(inputdf_1,input_appname2,task_type2)
+  inputdf_2=cleanMissingValues(inputdf,input_appname2,task_type2)
   inputdf_3=fixCategoricalColumns(inputdf_2,input_appname2,task_type2)
   return inputdf_3
 
