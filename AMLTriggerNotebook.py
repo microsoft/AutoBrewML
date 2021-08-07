@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 # Databricks notebook source
 # DBTITLE 1,Import Functions
 # MAGIC %run .../.../AMLMasterNotebook
