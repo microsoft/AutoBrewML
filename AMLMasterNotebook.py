@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 # Databricks notebook source
 # MAGIC 
 # MAGIC %md
