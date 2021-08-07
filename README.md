@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation
-// Licensed under the MIT License
+Copyright (c) Microsoft Corporation
+<br/>Licensed under the MIT License
 
 # Introduction
 Traditional machine learning model development is resource-intensive, requiring significant domain/statistical knowledge and time to produce and compare dozens of models. 
