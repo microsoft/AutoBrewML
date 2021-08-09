@@ -6,7 +6,7 @@ Traditional machine learning model development is resource-intensive, requiring 
 With automated machine learning, the time it takes to get production-ready ML models with great ease and efficiency highly accelerates. However, the Automated Machine Learning does not yet provide much in terms of data preparation and feature engineering. 
 The AcceleratedML framework tries to solve this problem at scale as well as simplifies the overall process for the user. It leverages the Azure Automated ML coupled with components like Data Profiler, Data Sampler, Data Cleanser, Anomaly Detector which ensures quality data as a critical pre-step for building the ML model. This is powered with Telemetry, DevOps and Power BI integration, thus providing the users with a one-stop shop solution to productionize any ML model. The framework aims at ‘Democratizing’ AI all the while maintaining the vision of ‘Responsible’ AI.
 
-> - [WiKi](https://github.com/microsoft/AcceleratedML/blob/6b495ed6f1ac31190756d1e70b8f43ac1a4d6d12/AcceleratedML.pptx)
+> - [WiKi](https://github.com/microsoft/AcceleratedML/blob/534985007b932e38985d9c44e5de951a3cfe1768/Resources/AcceleratedML.pptx)
 
 # Getting Started
 ## Prerequisites 
@@ -41,7 +41,7 @@ The AcceleratedML framework tries to solve this problem at scale as well as simp
     5. SmartNoise to maintain PII data secrecy
 8.	[Telemetry & DevOps Integration for Pipelining](#telemetry-and-devops-integration-for-pipelining)
 
-![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/Pipeline.png)
+![](https://github.com/microsoft/AcceleratedML/blob/534985007b932e38985d9c44e5de951a3cfe1768/Resources/Pipeline.png)
 
 # Exploratory Data Analysis
 Exploratory Data Analysis refers to the critical process of performing initial investigations on data to discover patterns, to spot anomalies, to test hypothesis and to check assumptions with the help of summary statistics and graphical representations. 
@@ -50,7 +50,7 @@ Exploratory Data Analysis refers to the critical process of performing initial i
 By Data Sampling, we can select, manipulate and analyze a representative subset of data points to identify patterns and trends in the larger dataset being examined. The dataset thus obtained is a weighted sample of the actual dataset, thus enabling a clear picture of the bigger dataset with best performance, retaining the overall data density and distribution. The following method is used to obtain samples of data from the original input data using different techniques and the best sample thus obtained is suggested to the user. The function ‘Sampling’ encompasses all the features of this as explained below.
 <br/>
 
-![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/Sampling_Techniques_Explained.png)
+![](https://github.com/microsoft/AcceleratedML/blob/534985007b932e38985d9c44e5de951a3cfe1768/Resources/Sampling_Techniques_Explained.png)
 
 1.	**Get the ideal sample size from the original input dataset using Solven’s formula**
 <br/>n=N/((1+N^2 ) )
@@ -134,7 +134,7 @@ MinMax scaler transforms features by scaling each feature to a given range on th
 Anomaly detection aims to detect abnormal patterns deviating from the rest of the data, called anomalies or outliers. Handling Outliers and anomalies is critical to the machine learning process. Outliers can impact the results of our analysis and statistical modeling in a drastic way. Our tendency is to use straightforward methods like box plots, histograms and scatter-plots to detect outliers. But dedicated outlier detection algorithms are extremely valuable in fields which process large amounts of data and require a means to perform pattern recognition in larger datasets. The PyOD library can step in to bridge this gap, which is a comprehensive and scalable Python toolkit for detecting outlying objects in multivariate data. We will be using the following algorithms within PyOD to detect and analyze the Outliers and indicate their presence in datasets.
 <br/>
 
-![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/AnomalyDetection_Techniques_Explained.png)
+![](https://github.com/microsoft/AcceleratedML/blob/534985007b932e38985d9c44e5de951a3cfe1768/Resources/AnomalyDetection_Techniques_Explained.png)
 
 <br/>**1. Angle-Based Outlier Detection (ABOD)**
 <br/>It considers the relationship between each point and its neighbor(s). It does not consider the relationships among these neighbors. The variance of its weighted cosine scores to all neighbors could be viewed as the outlying score. ABOD performs well on multi-dimensional data
@@ -208,15 +208,15 @@ Using Azure Machine Learning, you can design and run your automated ML training 
 <br/>
 6. The best model obtained can also be deployed and used using a REST API. The actual v/s predicted data can be reported and analyzed in Power BI along with the telemetry timestamps. 
 
-![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/AutoMLTrigger_steps.png)
+![](https://github.com/microsoft/AcceleratedML/blob/534985007b932e38985d9c44e5de951a3cfe1768/Resources/AutoMLTrigger_steps.png)
 
 # Responsible AI Guidelines
 AI systems can cause a variety of fairness-related harms, including harms involving people’s individual experiences with AI systems or the ways that AI systems represent the groups to which they belong. Prioritizing fairness in AI systems is a sociotechnical challenge.
 Responsible AI Guidelines suggest the best way to build fairness, interpretability, privacy, and security into these systems.
 <br/>
 
-![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/ResponsibleAI_Pipeline.png)
-![](https://github.com/microsoft/AutoTuneML/blob/0b7ba9c7526e00b7911de87f68ff0f387fbe6bf2/ResponsibleAI_Explained.png)
+![](https://github.com/microsoft/AcceleratedML/blob/534985007b932e38985d9c44e5de951a3cfe1768/Resources/ResponsibleAI_Pipeline.png)
+![](https://github.com/microsoft/AcceleratedML/blob/534985007b932e38985d9c44e5de951a3cfe1768/Resources/ResponsibleAI_Explained.png)
 
 # Telemetry and DevOps Integration for Pipelining
 We would maintain two notebooks and a pipeline can be set to trigger the Trigger notebook from Azure Data Factory–
