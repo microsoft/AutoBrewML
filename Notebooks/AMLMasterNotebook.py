@@ -41,30 +41,14 @@
 # MAGIC %pip install azureml-explain-model
 # MAGIC %pip install imbalanced-learn
 # MAGIC %pip install pyod
-                                       
-                                
-         
-                                   
-                                         
-                                       
-                                                        
-                                           
-                                  
-                                            
-                                        
-                                              
-                                 
-                                    
-                                    
-                                     
-                                            
-                                 
-                                
-                                 
-
+  
 # COMMAND ----------
 
 # DBTITLE 1,Prerequisities - Version check
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt			  							
 import warnings
 warnings.filterwarnings('ignore')
 #from __future__ import print_function
@@ -77,60 +61,6 @@ print('- numpy = {}'.format(np.__version__))
 print('- matplotlib = {}'.format(matplotlib.__version__))
 print('- pandas = {}'.format(pd.__version__))
 print('- sklearn = {}'.format(sklearn.__version__))
-
-                    
-
-                                              
-              
-                                     
-                                               
-                                             
-                                                     
-                        
-                           
-        
-                                        
-                                        
-                                      
-                            
-         
-                                                          
-                                            
-                                
-         
-                                
-         
-                                                         
-                                               
-                               
-         
-            
-         
-                                                         
-                                               
-                               
-         
-        
-                                                                                                                                                                                                      
-                                                                                         
-                                                                                                        
-        
-                                                         
-                                                                                        
-                                                                          
-                                                                                   
-                                                                   
-                                                                        
-                                                                                     
-        
-                
-                                                                                                                                                                                 
-                                                                                                                                                                      
-                                                                                                                                                                 
-                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                
-                                                                                      
-                                                                   
 
 # COMMAND ----------
 
@@ -279,7 +209,11 @@ def AnomalyDetection(df,target_variable,variables_to_analyze,outliers_fraction,i
         #print(html3)
         #with open(output_file,'w') as f:
         #    f.write(t)
-        
+		#filepath="adl://psinsightsadlsdev01.azuredatalakestore.net/DEV/AnomalyDetection.html"
+        ##plt.savefig(tmpfile, format='png')
+        #plt.savefig('/dbfs/FileStore/AnomalyDetection.png')
+        #dbutils.fs.cp ("/FileStore/AnomalyDetection.png", filepath, True)
+        #print("Anomaly Detection Report can be downloaded from path: ",filepath)																			  
 
 
 # COMMAND ----------
@@ -324,8 +258,8 @@ def AnomalyDetection(df,target_variable,variables_to_analyze,outliers_fraction,i
 
 # COMMAND ----------
 
-# DBTITLE 1,Sampling- Cluster Sampling
-def ClusterSampling(input_dataframe,filepath,task_type,input_appname,cluster_col):
+# DBTITLE 1,Sampling- Cluster Sampling2
+def ClusterSampling_Oversampling(input_dataframe,filepath,task_type,input_appname,cluster_col):
   #input_dataframe = pd.read_csv("/dbfs/FileStore/glass.csv", header='infer')
   #cluster_col='Y'
   #task_type='Sampling'
@@ -355,10 +289,151 @@ def ClusterSampling(input_dataframe,filepath,task_type,input_appname,cluster_col
   
   # summarize distribution
   print('Data Summary before sampling')
-  y=df_fin['Y']
+  #y=df_fin['Y']
   from sklearn.preprocessing import LabelEncoder
   le = LabelEncoder()
   df_fin['Y']=le.fit_transform(df_fin['Y'])
+  y=df_fin['Y']
+  counter = Counter(y)
+  Classes = []
+  for k,v in counter.items():
+    Classes.append(k)
+    per = v / len(y) * 100
+    print('Class=%d, n=%d (%.3f%%)' % (k, v, per))
+  ### plot the distribution
+  ##pyplot.bar(counter.keys(), counter.values())
+  ##pyplot.show()
+  #print("Classes:",Classes)
+  
+  #SMOTE 
+  print('Data Summary after SMOTE')
+  from imblearn.over_sampling import SMOTE
+  # split into input and output elements
+  y = df_fin.pop('Y')
+  x = df_fin
+  # transform the dataset
+  oversample = SMOTE()
+  x, y = oversample.fit_resample(x, y)
+  # summarize distribution
+  counter = Counter(y)
+  for k,v in counter.items():
+      per = v / len(y) * 100
+      print('Class=%d, n=%d (%.3f%%)' % (k, v, per))
+  
+  df_fin=x
+  df_fin['Y']=y
+  df_fin.head()                                                           
+  #df_fin.count()
+  filepath = '/dbfs/FileStore/SMOTE.csv'
+  df_fin.to_csv(filepath, index=False)
+  #sample_size,pvalues_average,subsample=StratifiedSampling(df_fin,'/dbfs/FileStore/SMOTE.csv',task_type,input_appname)
+  subsample=df_fin
+  
+  #Hypothesis test to see if sample is accepted
+  input_dataframe = pd.read_csv(filepath, header='infer')
+  from scipy import stats
+  pvalues = list()                    
+  for col in subsample.columns:
+    if (subsample[col].dtype) in ["int32","int64","float","float64"]: 
+      # Numeric variable. Using Kolmogorov-Smirnov test
+      pvalues.append(stats.ks_2samp(subsample[col],input_dataframe[col]))
+        
+    else:
+      # Categorical variable. Using Pearson's Chi-square test
+      from scipy import stats
+      import pandas as pd
+      sample_count=pd.DataFrame(subsample[col].value_counts())
+      input_dataframe_count=pd.DataFrame(input_dataframe[col].value_counts())
+      absent=input_dataframe_count-sample_count
+      absent2=absent.loc[absent[col].isnull()]
+      absent2[col]=0
+      sample_count_final=pd.concat([absent2,sample_count]) 
+      pvalues.append(stats.chisquare(sample_count_final, input_dataframe_count))
+  
+  count=0
+  length =  len(subsample.columns)
+  pvalues_average=0
+  for i in range(length): 
+    if pvalues[i].pvalue >=0.05:
+      count=count+1
+      #print(pvalues[i].pvalue) 
+      pvalues_average=pvalues_average+pvalues[i].pvalue 
+  pvalues_average=pvalues_average/length
+  #pvalues_average=pvalues_average[0]
+  #atleast threashold% of columns pass the hypothesis then accept the sample else reject 
+  threshold=0.5
+  Len_Actualdataset=len(input_dataframe.index)
+  Len_Sampleddataset=len(subsample.index)                                         Sampling_Error=1/math.sqrt(Len_Sampleddataset) * 100
+  print ("Volume of actual dataset = ",Len_Actualdataset)                                        
+  print ("Volume of Sampled dataset =",Len_Sampleddataset) 
+  print('Sampling Error for actual_size={} sample_size={} is {:.3f}% '.format(Len_Actualdataset,Len_Sampleddataset,Sampling_Error))
+    
+  if count> threshold*len(input_dataframe.columns):
+    print ("Cluster Sample accepted-via KS and Chi_square Null hypothesis")
+    
+    Len_Actualdataset= "%s" % str(Len_Actualdataset)
+    Len_Sampleddataset= "%s" % str(Len_Sampleddataset)
+    Sampling_Error= "%s" %  str(Sampling_Error)  
+    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
+    spark.sql(rm_str1)
+    rm_str2 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
+    spark.sql(rm_str2)
+    rm_str3 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
+    spark.sql(rm_str3)
+    rm_str4 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Cluster Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
+    spark.sql(rm_str4)
+    
+  else:
+    print ("Cluster Sample rejected")
+    rm_str5 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Cluster Sample rejected'," + tsquotes + ")"
+    spark.sql(rm_str5)
+  #print(pvalues) 
+  #P is the probability that there is no significant difference between sample and actual (Null hypothesis)
+  print('Average p-value between sample and actual(the bigger the p-value the closer the two datasets are.)= ',pvalues_average)
+  
+  pvalues_average="%s" % str(pvalues_average)
+  rm_str6 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
+  spark.sql(rm_str6)
+  return(Len_Sampleddataset,pvalues_average,subsample)
+
+# COMMAND ----------
+
+# DBTITLE 1,Sampling- Cluster Sampling2
+def ClusterSampling_StratifiedUndersampling(input_dataframe,filepath,task_type,input_appname,cluster_col):
+  #input_dataframe = pd.read_csv("/dbfs/FileStore/glass.csv", header='infer')
+  #cluster_col='Y'
+  #task_type='Sampling'
+  #input_appname='RealEstate'
+  #filepath="/dbfs/FileStore/glass.csv"
+  
+  df_fin=input_dataframe
+  df_fin['Y']=df_fin[cluster_col]
+  print('Length of actual input data=', len(input_dataframe.index))
+  
+  from sklearn.preprocessing import LabelEncoder
+  from collections import Counter
+  import pandas as pd
+  import numpy as np
+  import math
+  import imblearn
+  
+  import time
+  ts = int(time.time())
+  appname = input_appname
+  appnamequotes = "'%s'" % appname
+  tsquotes = "'%s'" % str(ts)
+  task = "'%s'" % str(task_type)
+  print("Cluster sampling with SMOTE starting")
+  rm_str = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + ","+ task + ",'Cluster Sampling starting'," + tsquotes + ")"
+  spark.sql(rm_str)
+  
+  # summarize distribution
+  print('Data Summary before sampling')
+  #y=df_fin['Y']
+  from sklearn.preprocessing import LabelEncoder
+  le = LabelEncoder()
+  df_fin['Y']=le.fit_transform(df_fin['Y'])
+  y=df_fin['Y']
   counter = Counter(y)
   Classes = []
   for k,v in counter.items():
@@ -388,99 +463,11 @@ def ClusterSampling(input_dataframe,filepath,task_type,input_appname,cluster_col
   df_fin=x
   df_fin['Y']=y
   df_fin.head()    
-  #Stratifying to get sample
-  df_sample = pd.DataFrame()
-  count_records_per_cluster= list()
-  sample_records_per_cluster=list()
-  total_records=len(df_fin.index)
-  #Getting ideal sample size by Solven's Formula assuming Confidence Level=95% i.e n = N / (1 + Ne²)
-  sample_size= round(total_records / (1 + total_records* (1-0.95)*(1-0.95)))
-  for i in Classes:
-    df_fin_test=df_fin
-    count_records_per_cluster.append(df_fin_test['Y'].value_counts()[i])
-    sample_records_per_cluster.append(count_records_per_cluster[i]/total_records * sample_size)
-    df_sample_per_cluster=df_fin_test[df_fin_test.Y==i]
-    df_sample_per_cluster=df_sample_per_cluster.sample(int(sample_records_per_cluster[i]),replace=True)   
-    df_sample=df_sample.append(df_sample_per_cluster, ignore_index = True)
-  
-  # summarize distribution
-  print('Data Summary after sampling')
-  y=df_sample['Y']
-  counter = Counter(y)
-  for k,v in counter.items():
-      per = v / len(y) * 100
-      print('Class=%d, n=%d (%.3f%%)' % (k, v, per))
-  
-  #Hypothesis test to see if sample is accepted
-  input_dataframe = pd.read_csv(filepath, header='infer')
-  from scipy import stats
-  pvalues = list()
-  subsample=df_sample
-  for col in subsample.columns:
-    if (subsample[col].dtype) in ["int32","int64","float"]: 
-      # Numeric variable. Using Kolmogorov-Smirnov test
-      pvalues.append(stats.ks_2samp(subsample[col],input_dataframe[col]))
-        
-    else:
-      # Categorical variable. Using Pearson's Chi-square test
-      from scipy import stats
-      import pandas as pd
-      sample_count=pd.DataFrame(subsample[col].value_counts())
-      input_dataframe_count=pd.DataFrame(input_dataframe[col].value_counts())
-      absent=input_dataframe_count-sample_count
-      absent2=absent.loc[absent[col].isnull()]
-      absent2[col]=0
-      sample_count_final=pd.concat([absent2,sample_count]) 
-      pvalues.append(stats.chisquare(sample_count_final, input_dataframe_count))
-  
-  count=0
-  length =  len(subsample.columns)
-  pvalues_average=0
-  for i in range(length): 
-    if pvalues[i].pvalue >=0.05:
-      count=count+1
-      #print(pvalues[i].pvalue) 
-      pvalues_average=pvalues_average+pvalues[i].pvalue 
-  pvalues_average=pvalues_average/length 
-  #pvalues_average=pvalues_average[0]
-  #atleast threashold% of columns pass the hypothesis then accept the sample else reject 
-  threshold=0.5
-  Len_Actualdataset=len(input_dataframe.index)
-  Len_Sampleddataset=len(subsample.index)
-  Len_Actualdataset_SMOTE= len(df_fin.index)
-  Sampling_Error=1/math.sqrt(Len_Sampleddataset) * 100
-  print ("Volume of actual dataset = ",Len_Actualdataset)
-  print ("Volume of actual dataset after oversampling = ",Len_Actualdataset_SMOTE)
-  print ("Volume of Sampled dataset =",Len_Sampleddataset) 
-  print('Sampling Error for actual_size={} sample_size={} is {:.3f}% '.format(Len_Actualdataset_SMOTE,Len_Sampleddataset,Sampling_Error))
-  if count> threshold*len(input_dataframe.columns):
-    print ("Cluster Sample accepted-via KS and Chi_square Null hypothesis")
-    Len_Actualdataset= "%s" % str(Len_Actualdataset)
-    Len_Sampleddataset= "%s" % str(Len_Sampleddataset)
-    Sampling_Error= "%s" %  str(Sampling_Error)  
-    rm_str1 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of actual dataset = " + Len_Actualdataset + "'," + tsquotes + ")"
-    spark.sql(rm_str1)
-    rm_str2 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Volume of Sampled dataset =" + Len_Sampleddataset + "'," + tsquotes + ")"
-    spark.sql(rm_str2)
-    rm_str3 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Sampling Error = " + Sampling_Error + "'," + tsquotes + ")"
-    spark.sql(rm_str3)
-    rm_str4 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Cluster Sample accepted-via KS and Chi_square Null hypothesis'," + tsquotes + ")"
-    spark.sql(rm_str4)
-    
-  else:
-    print ("Cluster Sample rejected")
-    rm_str5 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'Cluster Sample rejected'," + tsquotes + ")"
-    spark.sql(rm_str5)
-  #print(pvalues) 
-  #P is the probability that there is no significant difference between sample and actual (Null hypothesis)
-  print('Average p-value between sample and actual(the bigger the p-value the closer the two datasets are.)= ',pvalues_average)
-  
-  pvalues_average="%s" % str(pvalues_average)
-  rm_str6 = "Insert into TelemetryTable values (" + appnamequotes + ","+ task + ",'The bigger the p-value the closer the two datasets are, Average p-value between sample and actual- = " + pvalues_average + "'," + tsquotes + ")"
-  spark.sql(rm_str6)
-    
+  #df_fin.count()
+  filepath = '/dbfs/FileStore/SMOTE.csv'
+  df_fin.to_csv(filepath, index=False)
+  sample_size,pvalues_average,subsample=StratifiedSampling(df_fin,'/dbfs/FileStore/SMOTE.csv',task_type,input_appname)
   return(sample_size,pvalues_average,subsample)
-
 # COMMAND ----------
 
 # DBTITLE 1,Sampling- Random Sampling
@@ -1177,6 +1164,27 @@ def Data_Profiling_viaPandasProfiling(df):
   return(p)
   #displayHTML(p)
   #return(df.describe())
+
+# COMMAND ----------
+
+# DBTITLE 1,Data Profiler-Plots
+import seaborn as sns
+import matplotlib.pyplot as plt
+def Data_Profiling_Plots(input_dataframe,Categorical_cols,Numeric_cols,Label_col):
+  print('Count plots to identify if any biasness due to data skewness in Categorical columns')
+  for col in Categorical_cols:
+    sns.countplot(input_dataframe[col], dodge=True).set(title='Count Plot for column: '+ col)
+    plt.show()
+
+  print('Box distribution plots to identify if any biasness of Categorical columns in determining label col')
+  for col in Categorical_cols:
+      sns.boxplot(x = input_dataframe[col], y = input_dataframe[Label_col])
+      plt.show()
+  
+  print('Distribution plots to identify if any biasness due to data skewness in Numerical columns')
+  for col in Numeric_cols:
+      sns.distplot(input_dataframe[col]).set(title='Count Plot for column: '+ col)
+      plt.show() 
 
 # COMMAND ----------
 
