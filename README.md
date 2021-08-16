@@ -14,12 +14,12 @@ The AcceleratedML framework tries to solve this problem at scale as well as simp
    2. Auto Tune Model Notebooks **(Master, Trigger notebooks)**
    3. Azure ML Services workspace 
    4. Python cluster in Databricks with configurations as mentioned in Installations link above (PyPi library azureml-sdk[automl],azureml-opendatasets, azureml-widgets in cluster) 
-   5. For sample dataset to be used in notebook refer- [Real Estate Data](https://archive.ics.uci.edu/ml/datasets/Real+estate+valuation+data+set) 
-   6. For sample notebook run refer- [Real Estate House Price Pred](https://github.com/microsoft/AcceleratedML/wiki/Sample-Runs)
-
+   
 ## How to use it
 1. AMLMasterNotebook: Contains all the base functions used Data Acquisition, EDA, Sampling, Cleansing, Anomaly Detection, Azure AutoML Trigger, AutoML Trigger bypassing authentication to Azure ML(used for pipelining the notebook). 
 2. AMLMasterNotebook_Trigger: Function calls in order to perform a pipeline of tasks. 
+3. For sample dataset to be used in notebook refer- [Real Estate Data](https://archive.ics.uci.edu/ml/datasets/Real+estate+valuation+data+set) 
+4. For sample notebook run refer- [Real Estate House Price Pred](https://github.com/microsoft/AcceleratedML/wiki/Sample-Runs)
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
