@@ -19,7 +19,7 @@ The AcceleratedML framework tries to solve this problem at scale as well as simp
 1. AMLMasterNotebook: Contains all the base functions used Data Acquisition, EDA, Sampling, Cleansing, Anomaly Detection, Azure AutoML Trigger, AutoML Trigger bypassing authentication to Azure ML(used for pipelining the notebook). 
 2. AMLMasterNotebook_Trigger: Function calls in order to perform a pipeline of tasks. 
 3. For sample dataset to be used in notebook refer- [Real Estate Data](https://archive.ics.uci.edu/ml/datasets/Real+estate+valuation+data+set) 
-4. For sample notebook run refer- [Real Estate House Price Pred](https://github.com/microsoft/AcceleratedML/wiki/Sample-Runs)
+4. For sample notebook run refer- [Real Estate House Price Pred](https://github.com/microsoft/AcceleratedML/blob/d8050f9bbd87b02ddfa6180f4a9aa4caf39dace5/SampleRegression/Real%20Estate%20House%20Price%20Pred/Trigger_Final(Real-Estate%20House%20Price%20Pred).ipynb)
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
