@@ -1471,6 +1471,95 @@ def ModelInterpret(df,label_col,subscription_id,resource_group,workspace_name,ru
   #ErrorAnalysisDashboard(dataset=x_test, true_y=y_test.tolist(), features=feature_names,
   #                       pred_y=predictions, model_task='regression')
 
+
+
+# COMMAND ----------
+
+# DBTITLE 1,Error Analysis
+
+def ErrorAnalysisDashboard(df,label_col,subscription_id,resource_group,workspace_name,run_id,iteration,task):
+  import logging
+  import os
+  import random
+  import time
+  import json
+  
+  from matplotlib import pyplot as plt
+  from matplotlib.pyplot import imshow
+  import numpy as np
+  import pandas as pd
+  
+  import azureml.core
+  from azureml.core.experiment import Experiment
+  from azureml.core.workspace import Workspace
+  from azureml.train.automl import AutoMLConfig
+  from azureml.train.automl.run import AutoMLRun  
+  import azureml.train.automl
+  
+  from azureml.train.automl.automlconfig import AutoMLConfig
+  from azureml.core import Workspace
+  
+  
+  ##featureset should match with what was passed as X as part of the model training experiment
+  #df= pd.read_csv("/dbfs/FileStore/ClusterSampled_who.csv", header='infer')
+  #label_col='LifeExpectancy'
+  #subscription_id='3ecb9b6a-cc42-4b0a-9fd1-6c08027eb201'
+  #resource_group='psbidev'
+  #workspace_name='psdatainsightsML'
+  #run_id='AutoML_6ee88584-dd34-4efa-8c5f-476a75e7df5a'
+  #iteration=1
+  #task='regression'
+  
+  
+  ws = Workspace(workspace_name = workspace_name,
+                   subscription_id = subscription_id,
+                   resource_group = resource_group)
+  experiment_name = 'Experiment'
+  experiment = Experiment(ws, experiment_name)
+  automl_classV2 = AutoMLRun(experiment = experiment, run_id = run_id)
+  exp_run,exp_model = automl_classV2.get_output(iteration=iteration)
+  
+  from sklearn.model_selection import train_test_split
+  y_df = df.pop(label_col)
+  x_df = df
+  x_train, x_test, y_train, y_test = train_test_split(x_df, y_df, test_size=0.2, random_state=223)
+  
+  from azureml.train.automl.runtime.automl_explain_utilities import automl_setup_model_explanations
+  
+  automl_explainer_setup_obj = automl_setup_model_explanations(exp_model, X=x_train, 
+                                                               X_test=x_test, y=y_train, 
+                                                               task=task)
+  
+  from azureml.explain.model.mimic_wrapper import MimicWrapper
+  
+  # Initialize the Mimic Explainer
+  explainer = MimicWrapper(ws, automl_explainer_setup_obj.automl_estimator,
+                           explainable_model=automl_explainer_setup_obj.surrogate_model, 
+                           init_dataset=automl_explainer_setup_obj.X_transform, run=exp_run,
+                           features=automl_explainer_setup_obj.engineered_feature_names, 
+                           feature_maps=[automl_explainer_setup_obj.feature_map],
+                           classes=automl_explainer_setup_obj.classes,
+                           explainer_kwargs=automl_explainer_setup_obj.surrogate_model_params)
+  
+  
+  engineered_explanations = explainer.explain(['global'], eval_dataset=automl_explainer_setup_obj.X_test_transform)
+  #print(engineered_explanations.get_feature_importance_dict())
+  
+  #Model Interpretability, Feature Importance Global/Local
+  #from raiwidgets import ExplanationDashboard
+  #ExplanationDashboard(engineered_explanations,exp_model, dataset=x_test, true_y=y_test)
+  ##interpret = interpret.to_html() 
+  ##filepath="adl://psinsightsadlsdev01.azuredatalakestore.net/DEV/ModelInterpret.html"
+  ##interpret.to_file('/dbfs/FileStore/ModelInterpret.html')
+  ##dbutils.fs.cp ("/FileStore/ModelInterpret.html", filepath, True)
+  ##print("ModelInterpret Report can be downloaded from path: ",filepath)
+  
+  from raiwidgets import ErrorAnalysisDashboard
+  feature_names = list(x_test.columns)
+  predictions = exp_model.predict(x_test)
+  ErrorAnalysisDashboard(dataset=x_test, true_y=y_test.tolist(), features=feature_names,
+                         pred_y=predictions, model_task=task
+
 # COMMAND ----------
 
 # DBTITLE 1,Feature Importance
