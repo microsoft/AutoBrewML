@@ -1998,7 +1998,109 @@ def AutoMLFuncSP(subscription_id,resource_group,workspace_name,svc_pr_password,t
   print("Follow this URL for your Experiment run: ")  
   print(local_run.get_portal_url())
 
+# COMMAND ----------
 
+# DBTITLE 1,Auto ML Run -TS Forecasting
+
+def AutoMLFuncTS(subscription_id,resource_group,workspace_name,input_dataframe,label_col,task_type,input_appname,train_data,test_data,TimeColumn,GroupColumnList):
+  #train-test split
+  train_data=train_data
+  test_data=test_data
+  label=label_col
+  test_labels = test_data.pop(label).values
+  
+  time_series_settings = {
+  "time_column_name": TimeColumn,
+  "grain_column_names": GroupColumnList,
+  "max_horizon": 2,
+  "target_lags": 2,
+  "target_rolling_window_size": 2,
+  "featurization": "auto",
+  "short_series_handling_configuration":'auto',
+  "freq": 'MS',
+  "short_series_handling_config": "auto"
+  }
+  
+  from azureml.core.workspace import Workspace
+  from azureml.core.experiment import Experiment
+  from azureml.train.automl import AutoMLConfig
+  import logging
+  from azureml.core.compute import ComputeTarget, AmlCompute
+  from azureml.core.compute_target import ComputeTargetException
+  from azureml.core.experiment import Experiment
+  from azureml.core import Workspace
+  from azureml.core.authentication import ServicePrincipalAuthentication
+  from azureml.core.dataset import Dataset
+  from azureml.widgets import RunDetails
+  from azureml.core import Dataset, Datastore
+  from azureml.data.datapath import DataPath
+  from sklearn.metrics import confusion_matrix 
+  from sklearn.metrics import accuracy_score 
+  from sklearn.metrics import classification_report
+  import os
+  import warnings
+  from sklearn.metrics import mean_squared_error
+  from math import sqrt
+  warnings.filterwarnings('ignore')
+  
+  automl_config = AutoMLConfig(task='forecasting',
+                              primary_metric='normalized_root_mean_squared_error',
+                              iterations= 1,
+                              experiment_timeout_minutes=15,
+                              enable_early_stopping=True,
+                              n_cross_validations=2,
+                              training_data=train_data,
+                              label_column_name=label,
+                              enable_ensembling=False,
+                              verbosity=logging.INFO,
+                              **time_series_settings)
+  
+  
+  ws = Workspace(subscription_id = subscription_id, resource_group = resource_group, workspace_name = workspace_name)
+  #ws = Workspace.from_config()
+  
+  # Verify that cluster does not exist already
+  compute_config = AmlCompute.provisioning_configuration(vm_size='STANDARD_D12_V2',
+                                                          max_nodes=100)
+  compute_target = ComputeTarget.create(ws, amlcompute_cluster_name, compute_config)
+  compute_target.wait_for_completion(show_output=True)
+  
+  datastore = ws.get_default_datastore()
+  train_dataset = Dataset.Tabular.register_pandas_dataframe(train_data,datastore,'Covid')
+  test_dataset = Dataset.Tabular.register_pandas_dataframe(test_data,datastore,'Covid')
+  
+  experiment = Experiment(ws, "TS_forecasting")
+  remote_run = experiment.submit(automl_config, show_output=True)
+  remote_run.wait_for_completion()
+  best_run, fitted_model = remote_run.get_output()
+
+  #Prediction
+  result = test_data
+  y_predictions, X_trans = fitted_model.forecast(test_data)
+  result['Values_pred']=y_predictions
+  result['Values_actual']=test_labels
+  result['Error']=result['Values_actual']-result['Values_pred']
+  result['Percentage_change'] = ((result['Values_actual']-result['Values_pred']) / result['Values_actual'] )* 100
+  result=result.reset_index(drop=True)
+  #result
+
+  #Accuracy Calculation
+  y_actual = test_labels
+  sum_actuals = sum_errors = 0
+  for actual_val, predict_val in zip(y_actual, y_predictions):
+  abs_error = actual_val - predict_val
+  if abs_error < 0:
+      abs_error = abs_error * -1
+      sum_errors = sum_errors + abs_error
+      sum_actuals = sum_actuals + actual_val
+  
+  mean_abs_percent_error = sum_errors / sum_actuals
+  Accuracy_score = 1 - mean_abs_percent_error
+  print(Accuracy_score)
+
+  return(result,Accuracy_score)
+
+			 
 # COMMAND ----------
 
 # DBTITLE 1,Telemetry Table Creation in gen2 dev lake
