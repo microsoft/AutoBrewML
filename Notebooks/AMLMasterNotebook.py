@@ -1562,6 +1562,141 @@ def ErrorAnalysisDashboard(df,label_col,subscription_id,resource_group,workspace
 
 # COMMAND ----------
 
+# DBTITLE 1,Fairness Analysis on Sensitive Features
+def FairnessDashboard(input_dataframe,label_col,subscription_id,resource_group,workspace_name,task_type,sensitive_features):
+  from azureml.core import Workspace
+  from raiwidgets import FairnessDashboard
+  import pandas as pd
+  ws = Workspace(subscription_id = subscription_id, resource_group = resource_group, workspace_name = workspace_name)
+  #ws.write_config()
+  
+  # (Optional) Separate the "sex" and "race" sensitive features out and drop them from the main data prior to training your model
+  y = input_dataframe.pop(label_col)
+  x_df = input_dataframe
+  A = x_df[sensitive_features]
+  x = x_df.drop(labels=sensitive_features,axis = 1)
+  
+  # Split the data in "train" and "test" sets
+  (X_train, X_test, y_train, y_test, A_train, A_test) = train_test_split(
+      x, y, A, test_size=0.3, random_state=12345, stratify=y
+  )
+  
+  # Ensure indices are aligned between X, y and A,
+  # after all the slicing and splitting of DataFrames
+  # and Series
+  x_train = X_train.reset_index(drop=True)
+  x_test = X_test.reset_index(drop=True)
+  y_train = y_train.reset_index(drop=True)
+  y_test = y_test.reset_index(drop=True)
+  A_train = A_train.reset_index(drop=True)
+  A_test = A_test.reset_index(drop=True)
+  
+  
+  #AML config
+  from azureml.train.automl import AutoMLConfig
+  import logging
+  #primary_metric_regression=["spearman_correlation","normalized_root_mean_squared_error"]
+  #primary_metric_classification=["average_precision_score_weighted","AUC_weighted"]
+  if task_type=="regression":
+    automl_config = AutoMLConfig(task=task_type,
+                             iteration_timeout_minutes= 10,
+                             iterations= 1,
+                             primary_metric='spearman_correlation',
+                             preprocess= True,
+                             verbosity= logging.INFO,
+                             n_cross_validations= 5,
+                             debug_log='automated_ml_errors.log',
+                             X=x_train,
+                             y=y_train)
+    #AML run
+    from azureml.core.experiment import Experiment
+    experiment = Experiment(ws, "Experiment")
+    local_run = experiment.submit(automl_config, show_output=True) 
+    
+    #best model extraction
+    best_run, fitted_model = local_run.get_output()
+    
+    #accuracy calculation
+    y_predict = fitted_model.predict(x_test)
+    x_test['y_predict'] = y_predict
+    x_test['y_actual'] = y_test
+    x_train['y_predict'] = y_train
+    x_train['y_actual'] = y_train
+    y_actual = y_test.tolist()
+    sum_actuals = sum_errors = 0
+    for actual_val, predict_val in zip(y_actual, y_predict):
+        abs_error = abs(actual_val) - abs(predict_val)
+        if abs_error < 0:
+            abs_error = abs_error * -1
+    
+        sum_errors = sum_errors + abs_error
+        sum_actuals = sum_actuals + actual_val
+    mean_abs_percent_error = sum_errors / sum_actuals
+    #print("Model Accuracy:")
+    #print(1 - mean_abs_percent_error)
+    Accuracy_score="'%s'" % str(1 - mean_abs_percent_error)
+    #rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
+    print("Accuracy Score as per absolute Error Percentage= " + Accuracy_score)
+    #spark.sql(rm_str1)
+    #return(1 - mean_abs_percent_error)
+    print("Follow this URL for your Experiment run: ")  
+    print(local_run.get_portal_url())
+    #ret=x_test.append(x_train, ignore_index = True)
+    #return(ret)
+    #return(x_test)
+  if task_type=="classification":
+    automl_config = AutoMLConfig(task=task_type,
+                             iteration_timeout_minutes= 10,
+                             iterations= 1,
+                             primary_metric='AUC_weighted',
+                             preprocess= True,
+                             verbosity= logging.INFO,
+                             n_cross_validations= 5,
+                             debug_log='automated_ml_errors.log',
+                             X=x_train,
+                             y=y_train)
+    #AML run
+    from azureml.core.experiment import Experiment
+    experiment = Experiment(ws, "Experiment")
+    local_run = experiment.submit(automl_config, show_output=True)
+    #best model extraction
+    best_run, fitted_model = local_run.get_output()
+    #accuracy calculation
+    from sklearn.metrics import confusion_matrix 
+    from sklearn.metrics import accuracy_score 
+    from sklearn.metrics import classification_report
+    y_predict = fitted_model.predict(x_test)
+    x_test['y_predict'] = y_predict
+    x_test['y_actual'] = y_test
+    x_train['y_predict'] = y_train
+    x_train['y_actual'] = y_train
+    y_actual = y_test.tolist()
+    results = confusion_matrix(y_actual, y_predict) 
+    #print ('Confusion Matrix :')
+    #print(results) 
+    #print ('Accuracy Score :',accuracy_score(y_actual, y_predict))
+    #print ('Report : ')
+    #print (classification_report(y_actual, y_predict)) 
+    Accuracy_score="'%s'" % str(accuracy_score(y_actual, y_predict))
+    #rm_str1 = "Insert into Autotuneml.amltelemetry values (" + appnamequotes + "," + task + ",'Accuracy Score as per absolute Error Percentage=' " + Accuracy_score + "," + tsquotes + ")"
+    print("Accuracy Score as per absolute Error Percentage= " + Accuracy_score)
+    #spark.sql(rm_str1)
+    #return(accuracy_score(y_actual, y_predict))
+    print("Follow this URL for your Experiment run: ")  
+    print(local_run.get_portal_url())
+    #ret=x_test.append(x_train, ignore_index = True)
+    #return(x_test)
+    
+    # sensitive_features contains your sensitive features (e.g., age, binary gender)
+    # y_true contains ground truth labels
+    # y_pred contains prediction labels
+  
+    FairnessDashboard(sensitive_features=A_test,
+                    y_true=y_test,
+                    y_pred=y_predict)
+
+# COMMAND ----------
+
 # DBTITLE 1,Feature Importance
 import logging
 import os
