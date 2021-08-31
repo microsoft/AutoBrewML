@@ -1558,7 +1558,7 @@ def ErrorAnalysisDashboard(df,label_col,subscription_id,resource_group,workspace
   feature_names = list(x_test.columns)
   predictions = exp_model.predict(x_test)
   ErrorAnalysisDashboard(dataset=x_test, true_y=y_test.tolist(), features=feature_names,
-                         pred_y=predictions, model_task=task
+                         pred_y=predictions, model_task=task)
 
 # COMMAND ----------
 
@@ -2002,6 +2002,7 @@ def AutoMLFuncSP(subscription_id,resource_group,workspace_name,svc_pr_password,t
 
 # DBTITLE 1,Auto ML Run -TS Forecasting
 
+
 def AutoMLFuncTS(subscription_id,resource_group,workspace_name,input_dataframe,label_col,task_type,input_appname,train_data,test_data,TimeColumn,GroupColumnList):
   #train-test split
   train_data=train_data
@@ -2088,8 +2089,8 @@ def AutoMLFuncTS(subscription_id,resource_group,workspace_name,input_dataframe,l
   y_actual = test_labels
   sum_actuals = sum_errors = 0
   for actual_val, predict_val in zip(y_actual, y_predictions):
-  abs_error = actual_val - predict_val
-  if abs_error < 0:
+    abs_error = actual_val - predict_val
+    if abs_error < 0:
       abs_error = abs_error * -1
       sum_errors = sum_errors + abs_error
       sum_actuals = sum_actuals + actual_val
