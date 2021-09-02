@@ -27,4 +27,4 @@ This project welcomes contributions and suggestions. Most contributions require 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://cla.opensource.microsoft.com/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com?) with any additional questions or comments.
 <br/>
 
-*Note: To know in detail of the workings of Accelerated ML Framework, please visit [Auto Brew ML WiKi](https://github.com/microsoft/AutoBrewML/wiki).*
+*Note: To know in detail of the workings of Auto Brew ML Framework, please visit [Auto Brew ML WiKi](https://github.com/microsoft/AutoBrewML/wiki).*
