@@ -11,7 +11,7 @@ The AutoBrewML  framework tries to solve this problem at scale as well as simpli
 # Getting Started
 ## Prerequisites 
    1. Azure Databricks 
-   2. Auto Tune Model Notebooks **(Master, Trigger notebooks)**
+   2. Auto Brew ML Notebooks **(Master, Trigger notebooks)**
    3. Azure ML Services workspace 
    4. Python cluster in Databricks with configurations as mentioned in Installations link above (PyPi library azureml-sdk[automl],azureml-opendatasets, azureml-widgets in cluster) 
    
