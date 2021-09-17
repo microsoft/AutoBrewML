@@ -8,6 +8,22 @@ The AutoBrewML  framework tries to solve this problem at scale as well as simpli
 <br/>
 ![](https://github.com/microsoft/AcceleratedML/blob/e02bbbe4f5d036607de5d1a494f872960f2f1fba/Resources/Pipeline.png)
 
+## Our Inspiration Story
+As we think about the future of technology, it resides in the notion of intelligence. At Microsoft, we have an approach that’s both ambitious and broad, an approach that seeks to Democratize Machine Learning & Artificial Intelligence, to take it from the high walls of ivory towers and make it accessible for all.
+
+<br/>It is very rightly said that if you want something you never had, you have to do something you have never done! When we started on our ML journey we hoped to have a hand-holding which could accelerate our sail across the extensive nature of ML. We were stuck in the vicious loop of finding right algorithms and tools to achieve our target rather than focusing on the data at hand and fine tuning it with our Business Domain knowledge. Also traditional machine learning model development is resource-intensive, requiring significant domain/statistical knowledge and time to produce and compare dozens of models.  A team comprises of folks from various backgrounds and ML knowledge base, but driven by our mission at Microsoft 'To empower every person and every organization on the planet to achieve more' we want to open ways for each and everyone to have access over the wonders of ML & AI.
+
+<br/>So by amalgamating all our pain points and covering the aspects of an end-to-end ML pipeline we came up with a Framework to get production-ready ML models with great ease and efficiency.
+
+<br/>How we pursue this bold ambition to democratize AI for all via this Framework:
+   1. Implement machine learning solutions without extensive programming knowledge
+   2. Find the right dataset for modelling
+   3. Save time and resources
+   4. Leverage Data Science best practices & Responsible AI
+   5. Provide agile problem-solving
+   6. Provide visualizations to interpret data
+   7. Capture telemetry throughout the process
+
 # Getting Started
 ## Prerequisites 
    1. Azure Databricks 
