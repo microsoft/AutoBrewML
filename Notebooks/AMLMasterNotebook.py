@@ -24,8 +24,8 @@
 # MAGIC 4. Python cluster in Databricks with libraries installed as mentioned in step 'Prerequisite libraries'
 # MAGIC 
 # MAGIC If in PS-Data and Insights Team you can use the following resources handy in DEV:
-# MAGIC 1. Azure ML Services workspace (subscription_id:'3ecb9b6a-cc42-4b0a-9fd1-6c08027eb201', resource_group:'psbidev' Contributor access, workspace_name:'psdatainsightsML')
-# MAGIC 2. Python cluster in Databricks (AMLsrdecluster)
+# MAGIC 1. Azure ML Services workspace (subscription_id:'<subscription_id>', resource_group:'<resource_group>' Contributor access, workspace_name:'<workspace_name>')
+# MAGIC 2. Python cluster in Databricks 
 
 # COMMAND ----------
 
@@ -1414,10 +1414,10 @@ def ModelInterpret(df,label_col,subscription_id,resource_group,workspace_name,ru
   ##featureset should match with what was passed as X as part of the model training experiment
   #df= pd.read_csv("/dbfs/FileStore/ClusterSampled_who.csv", header='infer')
   #label_col='LifeExpectancy'
-  #subscription_id='3ecb9b6a-cc42-4b0a-9fd1-6c08027eb201'
-  #resource_group='psbidev'
-  #workspace_name='psdatainsightsML'
-  #run_id='AutoML_6ee88584-dd34-4efa-8c5f-476a75e7df5a'
+  #subscription_id='<subscription_id>'
+  #resource_group='<resource_group>'
+  #workspace_name='<workspace_name>'
+  #run_id='<run_id>'
   #iteration=1
   #task='regression'
   
@@ -1503,10 +1503,10 @@ def ErrorAnalysisDashboard(df,label_col,subscription_id,resource_group,workspace
   ##featureset should match with what was passed as X as part of the model training experiment
   #df= pd.read_csv("/dbfs/FileStore/ClusterSampled_who.csv", header='infer')
   #label_col='LifeExpectancy'
-  #subscription_id='3ecb9b6a-cc42-4b0a-9fd1-6c08027eb201'
-  #resource_group='psbidev'
-  #workspace_name='psdatainsightsML'
-  #run_id='AutoML_6ee88584-dd34-4efa-8c5f-476a75e7df5a'
+  #subscription_id='<subscription_id>'
+  #resource_group='<resource_group>'
+  #workspace_name='<workspace_name>'
+  #run_id='<run_id>'
   #iteration=1
   #task='regression'
   
