@@ -1,9 +1,4 @@
-Copyright (c) Microsoft Corporation
-<br/>Licensed under the MIT License
-
 # Auto Brew ML
-
-# Overview
 Traditional machine learning model development is resource-intensive, requiring significant domain/statistical knowledge and time to produce and compare dozens of models. 
 With automated machine learning, the time it takes to get production-ready ML models with great ease and efficiency highly accelerates. However, the Automated Machine Learning does not yet provide much in terms of data preparation and feature engineering. 
 The AutoBrewML  framework tries to solve this problem at scale as well as simplifies the overall process for the user. It leverages the Azure Automated ML coupled with components like Data Profiler, Data Sampler, Data Cleanser, Anomaly Detector which ensures quality data as a critical pre-step for building the ML model. This is powered with Telemetry, DevOps and Power BI integration, thus providing the users with a one-stop shop solution to productionize any ML model. The framework aims at ‘Democratizing’ AI all the while maintaining the vision of ‘Responsible’ AI.
@@ -47,3 +42,5 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://cla
 <br/>
 
 *Note: To know in detail of the workings of Auto Brew ML Framework, please visit [Auto Brew ML WiKi](https://github.com/microsoft/AutoBrewML/wiki).*
+Copyright (c) Microsoft Corporation
+<br/>Licensed under the MIT License
