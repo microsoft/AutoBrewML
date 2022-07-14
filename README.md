@@ -3,7 +3,8 @@ Traditional machine learning model development is resource-intensive, requiring 
 With automated machine learning, the time it takes to get production-ready ML models with great ease and efficiency highly accelerates. However, the Automated Machine Learning does not yet provide much in terms of data preparation and feature engineering. 
 The AutoBrewML  framework tries to solve this problem at scale as well as simplifies the overall process for the user. It leverages the Azure Automated ML coupled with components like Data Profiler, Data Sampler, Data Cleanser, Anomaly Detector which ensures quality data as a critical pre-step for building the ML model. This is powered with Telemetry, DevOps and Power BI integration, thus providing the users with a one-stop shop solution to productionize any ML model. The framework aims at ‘Democratizing’ AI all the while maintaining the vision of ‘Responsible’ AI.
 <br/>
-![](https://github.com/microsoft/AcceleratedML/blob/e02bbbe4f5d036607de5d1a494f872960f2f1fba/Resources/Pipeline.png)
+![image](https://user-images.githubusercontent.com/41840390/179023870-d12f00aa-0524-4acf-9dd9-c5a360753d37.png)
+
 
 ## Our Inspiration Story
 As we think about the future of technology, it resides in the notion of intelligence. At Microsoft, we have an approach that’s both ambitious and broad, an approach that seeks to Democratize Machine Learning & Artificial Intelligence, to take it from the high walls of ivory towers and make it accessible for all.
