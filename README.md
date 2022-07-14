@@ -1,6 +1,8 @@
 Copyright (c) Microsoft Corporation
 <br/>Licensed under the MIT License
 
+# Auto Brew ML
+
 # Overview
 Traditional machine learning model development is resource-intensive, requiring significant domain/statistical knowledge and time to produce and compare dozens of models. 
 With automated machine learning, the time it takes to get production-ready ML models with great ease and efficiency highly accelerates. However, the Automated Machine Learning does not yet provide much in terms of data preparation and feature engineering. 
