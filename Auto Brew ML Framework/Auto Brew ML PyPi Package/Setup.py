@@ -15,7 +15,7 @@ def readme():
 
 setuptools.setup(
  name='AutoBrewML', 
- version='0.40',
+ version='0.41',
  author="Sreeja Deb",
  author_email="srde@microsoft.com",
  long_description=readme(),
