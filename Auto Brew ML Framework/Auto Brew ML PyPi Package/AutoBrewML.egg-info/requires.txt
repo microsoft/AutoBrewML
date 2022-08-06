@@ -1,0 +1,10 @@
+numpy
+pandas
+sklearn
+pandas_profiling
+MarkupSafe==2.0.1
+imblearn
+scikit-learn==0.23.1
+fairlearn
+tpot
+pyod
