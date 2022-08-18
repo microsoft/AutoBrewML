@@ -1162,6 +1162,27 @@ def suppress_stdout():
             sys.stdout = old_stdout
 
 def BrewTrainTestSplit(input_dataframe,label_col,splitratio):
+  columns_list = input_dataframe.columns
+  column = 'Index'
+  if column in columns_list:
+    input_dataframe.drop(['Index'], axis=1, inplace=True)
+
+  #Label Encoder Doesn't accept nulls so impute
+  x_train_dummy = impute(input_dataframe)
+  
+  #Feature imp accept only numeric columns hence label encode
+  allCols = [col for col in input_dataframe.columns]
+  catCols = [col for col in input_dataframe.columns if input_dataframe[col].dtype=="O"] 
+  # print(allCols)
+  # print(catCols)
+  if catCols: # If Categorical columns present (list not empty) then do label encode
+      from sklearn.preprocessing import LabelEncoder
+      le = LabelEncoder()
+      for col in input_dataframe.columns:
+          if (input_dataframe[col].dtype) not in ["int32","int64","float","float64"]:
+              le.fit(input_dataframe[col])
+              input_dataframe[col]=le.transform(input_dataframe[col])
+              
   from sklearn.model_selection import train_test_split
   y_df = input_dataframe.pop(label_col)
   x_df = input_dataframe
@@ -1222,8 +1243,81 @@ def BrewAutoML_Classifier(x_train,y_train,x_test,y_test):
 # # %%
 # model
 
+
 # %%
-def BrewFairnessEvaluator(model,x_test,sensitivefeatures,y_test):
+
+def BrewAutoML_Regressor(x_train,y_train,x_test,y_test):
+  with suppress_stdout():
+    from sklearn.preprocessing import LabelEncoder
+    from sklearn.model_selection import RepeatedKFold
+    from tpot import TPOTRegressor
+    # split into input and output elements
+    x_train_dummy = x_train.copy(deep=True)
+    y_train_dummy = y_train.copy(deep=True)
+    x_test_dummy  = x_test.copy(deep=True)
+    y_test_dummy  = y_test.copy(deep=True)
+
+
+    # #Label Encoder Doesn't accept nulls so impute
+    # x_train_dummy = impute(x_train_dummy)
+    # x_test_dummy  = impute(x_test_dummy)
+
+    # #Feature imp accept only numeric columns hence label encode
+    # allCols = [col for col in x_train_dummy.columns]
+    # catCols = [col for col in x_train_dummy.columns if x_train_dummy[col].dtype=="O"] 
+    # # print(allCols)
+    # # print(catCols)
+    # if catCols: # If Categorical columns present (list not empty) then do label encode
+    #     from sklearn.preprocessing import LabelEncoder
+    #     le = LabelEncoder()
+    #     for col in x_train_dummy.columns:
+    #         if (x_train_dummy[col].dtype) not in ["int32","int64","float","float64"]:
+    #             le.fit(x_train_dummy[col])
+    #             x_train_dummy[col]=le.transform(x_train_dummy[col])
+    #             x_test_dummy[col]=le.transform(x_test_dummy[col])
+
+
+    # define model evaluation
+    cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+
+    # define search
+    model = TPOTRegressor(generations=1, population_size=50, scoring='neg_mean_absolute_error', cv=cv, verbosity=2, random_state=1, n_jobs=-1)
+    # perform the search
+    model.fit(x_train_dummy, y_train_dummy)
+    y_predict=model.predict(x_test_dummy)
+
+
+
+    from sklearn.metrics import confusion_matrix 
+    from sklearn.metrics import accuracy_score 
+    from sklearn.metrics import classification_report
+    x_test_dummy['y_predict'] = y_predict
+    x_test_dummy['y_actual'] = y_test_dummy
+    y_actual = y_test_dummy.tolist()
+
+    sum_actuals = sum_errors = 0
+    for actual_val, predict_val in zip(y_actual, y_predict):
+        abs_error = abs(actual_val) - abs(predict_val)
+        if abs_error < 0:
+            abs_error = abs_error * -1
+
+        sum_errors = sum_errors + abs_error
+        sum_actuals = sum_actuals + actual_val
+    mean_abs_percent_error = sum_errors / sum_actuals
+    #print("Model Accuracy:")
+    #print(1 - mean_abs_percent_error)
+    Accuracy_score=1 - mean_abs_percent_error
+    print('Accuracy Score :',Accuracy_score)
+
+    return(model,x_test_dummy)
+
+# model,x_test_dummy=BrewAutoML_Regressor(x_train,y_train,x_test,y_test)
+# model
+
+
+
+# %%
+def BrewFairnessEvaluator_Classification(model,x_test,sensitivefeatures,y_test):
   import numpy as np
   from fairlearn.metrics import MetricFrame,mean_prediction,false_negative_rate
   from sklearn.metrics import accuracy_score
@@ -1242,18 +1336,14 @@ def BrewFairnessEvaluator(model,x_test,sensitivefeatures,y_test):
   return (gm.overall,gm.by_group)
 
 
-# y_pred = FairnessEvaluator(model,x_test,'Sex',y_test)
+# y_pred = BrewFairnessEvaluator_Classification(model,x_test,'Sex',y_test)
 
 
   
 
 
-# y_pred = FairnessEvaluator(model,x_test,'Sex',y_test)
-
-
-
-
-def BrewDisparityMitigation(x_test,sensitivefeatures,y_test):
+# %%
+def BrewDisparityMitigation_Classification(x_test,sensitivefeatures,y_test):
   import numpy as np
   from fairlearn.metrics import MetricFrame
   from sklearn.metrics import accuracy_score
@@ -1296,32 +1386,80 @@ def BrewDisparityMitigation(x_test,sensitivefeatures,y_test):
 
 
 # %%
-def BrewResponsibleAI(model,Final_df_actual_pred,x_test,sensitive_data_col,y_test):
-  import numpy as np 
-  overall_acc,grouped_acc=BrewFairnessEvaluator(model,x_test,sensitive_data_col,y_test)
-
-  for index, value in grouped_acc.items():
-    print(f"Cohort : {index}, Accuracy for the Cohort : {value}")
-
-  #If on comparing the accuracies along all the cohorts, the variance of accuracy is >50% then the accuracies are biased
-  #The maximum absolute difference in the series will always be the absolute difference between the minimum and the maximum element from the array.
-  min_acc_ind=grouped_acc.astype(np.int32).argmin()
-  max_acc_ind=grouped_acc.astype(np.int32).argmax()
-  print("Minimum Accuracy amongst all the cohorts: ", grouped_acc[min_acc_ind])
-  print("Maximum Accuracy amongst all the cohorts: ", grouped_acc[max_acc_ind])
-
-  perc_diff_minmax_acc= ((grouped_acc[max_acc_ind]- grouped_acc[min_acc_ind])/grouped_acc[max_acc_ind]) * 100
-  print("Percentage Difference b/w the min and max accuracies amongst all cohorts", perc_diff_minmax_acc)
-
-  if (perc_diff_minmax_acc > 50):
-    print("Triggerring Bias Mitigation")
-    Mitigated_model,Mitigated_Pred=BrewDisparityMitigation(x_test,sensitive_data_col,y_test)
-    return (Mitigated_model,Mitigated_Pred)
-  else:
-    print("Original Modelling Unbiased")
-    return (model,Final_df_actual_pred)
+def BrewFairnessEvaluator_Regression(model,x_test,sensitivefeatures,y_test):
+  import numpy as np
+  from fairlearn.metrics import MetricFrame,mean_prediction,false_negative_rate
+  from sklearn.metrics import mean_absolute_error
+  x_test_dummy  = x_test.copy(deep=True)
+  y_test_dummy  = y_test.copy(deep=True)
 
 
+  df=x_test[sensitivefeatures]
+  
+  y_pred = model.predict(x_test_dummy).tolist()
+  y_test2=y_test_dummy.astype(np.int32).tolist()
+  
+  gm = MetricFrame(metrics=mean_absolute_error, y_true=y_test2, y_pred=y_pred,sensitive_features=df)
+  print("Overall Accuracy:",gm.overall)
+  print("Group Wise Accuracy:",gm.by_group)
+  return (gm.overall,gm.by_group)
+
+
+#Calling
+#y_pred = BrewFairnessEvaluator_Regression(model,x_test,'Car Model',y_test)
+
+# %%
+def BrewResponsibleAI(problem,model,Final_df_actual_pred,x_test,sensitive_data_col,y_test):
+  if (problem=='Classification'):
+    import numpy as np 
+    overall_acc,grouped_acc=BrewFairnessEvaluator_Classification(model,x_test,sensitive_data_col,y_test)
+
+    for index, value in grouped_acc.items():
+      print(f"Cohort : {index}, Accuracy for the Cohort : {value}")
+
+    #If on comparing the accuracies along all the cohorts, the variance of accuracy is >50% then the accuracies are biased
+    #The maximum absolute difference in the series will always be the absolute difference between the minimum and the maximum element from the array.
+    min_acc_ind=grouped_acc.astype(np.int32).argmin()
+    max_acc_ind=grouped_acc.astype(np.int32).argmax()
+    print("Minimum Accuracy amongst all the cohorts: ", grouped_acc[min_acc_ind])
+    print("Maximum Accuracy amongst all the cohorts: ", grouped_acc[max_acc_ind])
+
+    perc_diff_minmax_acc= ((grouped_acc[max_acc_ind]- grouped_acc[min_acc_ind])/grouped_acc[max_acc_ind]) * 100
+    print("Percentage Difference b/w the min and max accuracies amongst all cohorts", perc_diff_minmax_acc)
+
+    if (perc_diff_minmax_acc > 50):
+      print("Triggerring Bias Mitigation")
+      Mitigated_model,Mitigated_Pred=BrewDisparityMitigation_Classification(x_test,sensitive_data_col,y_test)
+      return (Mitigated_model,Mitigated_Pred)
+    else:
+      print("Original Modelling Unbiased")
+      return (model,Final_df_actual_pred)
+
+  if (problem=='Regression'):
+    import numpy as np 
+    overall_acc,grouped_acc=BrewFairnessEvaluator_Regression(model,x_test,sensitive_data_col,y_test)
+
+    for index, value in grouped_acc.items():
+      print(f"Cohort : {index}, Accuracy for the Cohort : {value}")
+
+    #If on comparing the accuracies along all the cohorts, the variance of accuracy is >50% then the accuracies are biased
+    #The maximum absolute difference in the series will always be the absolute difference between the minimum and the maximum element from the array.
+    min_acc_ind=grouped_acc.astype(np.int32).argmin()
+    max_acc_ind=grouped_acc.astype(np.int32).argmax()
+    print("Minimum Accuracy amongst all the cohorts: ", grouped_acc[min_acc_ind])
+    print("Maximum Accuracy amongst all the cohorts: ", grouped_acc[max_acc_ind])
+
+    perc_diff_minmax_acc= ((grouped_acc[max_acc_ind]- grouped_acc[min_acc_ind])/grouped_acc[max_acc_ind]) * 100
+    print("Percentage Difference b/w the min and max accuracies amongst all cohorts", perc_diff_minmax_acc)
+
+    if (perc_diff_minmax_acc > 50):
+      print("Bias Mitigation Needed in data input")
+      # Mitigated_model,Mitigated_Pred=BrewDisparityMitigation_Classification(x_test,sensitive_data_col,y_test)
+      # return (Mitigated_model,Mitigated_Pred)
+      return (model,Final_df_actual_pred)
+    else:
+      print("Original Modelling Unbiased")
+      return (model,Final_df_actual_pred)
 
 
 

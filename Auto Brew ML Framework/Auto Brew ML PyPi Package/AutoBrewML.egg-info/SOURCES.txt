@@ -1,6 +1,7 @@
 LICENSE.txt
 README.rst
 setup.py
+AutoBrewML/Test.py
 AutoBrewML/__init__.py
 AutoBrewML.egg-info/PKG-INFO
 AutoBrewML.egg-info/SOURCES.txt
