@@ -1222,6 +1222,79 @@ def BrewAutoML_Classifier(x_train,y_train,x_test,y_test):
 # # %%
 # model
 
+
+# %%
+
+def BrewAutoML_Regressor(x_train,y_train,x_test,y_test):
+  with suppress_stdout():
+    from sklearn.preprocessing import LabelEncoder
+    from sklearn.model_selection import RepeatedKFold
+    from tpot import TPOTRegressor
+    # split into input and output elements
+    x_train_dummy = x_train.copy(deep=True)
+    y_train_dummy = y_train.copy(deep=True)
+    x_test_dummy  = x_test.copy(deep=True)
+    y_test_dummy  = y_test.copy(deep=True)
+
+    #Label Encoder Doesn't accept nulls so impute
+    x_train_dummy = impute(x_train_dummy)
+    x_test_dummy  = impute(x_test_dummy)
+
+    #Feature imp accept only numeric columns hence label encode
+    allCols = [col for col in x_train_dummy.columns]
+    catCols = [col for col in x_train_dummy.columns if x_train_dummy[col].dtype=="O"] 
+    # print(allCols)
+    # print(catCols)
+    if catCols: # If Categorical columns present (list not empty) then do label encode
+        from sklearn.preprocessing import LabelEncoder
+        le = LabelEncoder()
+        for col in x_train_dummy.columns:
+            if (x_train_dummy[col].dtype) not in ["int32","int64","float","float64"]:
+                le.fit(x_train_dummy[col])
+                x_train_dummy[col]=le.transform(x_train_dummy[col])
+                x_test_dummy[col]=le.transform(x_test_dummy[col])
+
+
+    # define model evaluation
+    cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+
+    # define search
+    model = TPOTRegressor(generations=5, population_size=50, scoring='neg_mean_absolute_error', cv=cv, verbosity=2, random_state=1, n_jobs=-1)
+    # perform the search
+    model.fit(x_train_dummy, y_train_dummy)
+    y_predict=model.predict(x_test_dummy)
+
+
+
+    from sklearn.metrics import confusion_matrix 
+    from sklearn.metrics import accuracy_score 
+    from sklearn.metrics import classification_report
+    x_test_dummy['y_predict'] = y_predict
+    x_test_dummy['y_actual'] = y_test_dummy
+    y_actual = y_test_dummy.tolist()
+
+    sum_actuals = sum_errors = 0
+    for actual_val, predict_val in zip(y_actual, y_predict):
+        abs_error = abs(actual_val) - abs(predict_val)
+        if abs_error < 0:
+            abs_error = abs_error * -1
+
+        sum_errors = sum_errors + abs_error
+        sum_actuals = sum_actuals + actual_val
+    mean_abs_percent_error = sum_errors / sum_actuals
+    #print("Model Accuracy:")
+    #print(1 - mean_abs_percent_error)
+    Accuracy_score=1 - mean_abs_percent_error
+    print('Accuracy Score :',Accuracy_score)
+
+    return(model,x_test_dummy)
+
+
+# model,x_test_dummy=BrewAutoML_Regressor(x_train,y_train,x_test,y_test)
+# model
+
+
+
 # %%
 def BrewFairnessEvaluator(model,x_test,sensitivefeatures,y_test):
   import numpy as np
