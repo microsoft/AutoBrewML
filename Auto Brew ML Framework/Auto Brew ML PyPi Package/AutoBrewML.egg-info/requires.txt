@@ -1,10 +1,13 @@
 numpy
+llvmlite
+numba
+scipy
 pandas
 sklearn
 pandas_profiling
-MarkupSafe==2.0.1
+MarkupSafe
 imblearn
-scikit-learn==0.23.1
+scikit-learn
 fairlearn
 tpot
 pyod
